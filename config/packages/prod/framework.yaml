@@ -1,7 +1,7 @@
-# config/packages/prod/framework.yaml
+# example of an *extra* pool – this is fine
 framework:
     cache:
         pools:
-            cache.app:
-                default_lifetime: 0
-    # or simply disable cache warming that touches the DB
+            my_project_cache:
+                adapter: cache.adapter.redis
+                default_lifetime: 3600
