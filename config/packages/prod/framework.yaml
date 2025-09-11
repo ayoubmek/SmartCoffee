@@ -1,7 +1,6 @@
-# example of an *extra* pool – this is fine
+# config/packages/prod/framework.yaml
 framework:
+    # do NOT open the DB/Redis/etc. while warming cache
     cache:
-        pools:
-            my_project_cache:
-                adapter: cache.adapter.redis
-                default_lifetime: 3600
+        app: cache.adapter.filesystem   # or null adapter
+        system: cache.adapter.filesystem
