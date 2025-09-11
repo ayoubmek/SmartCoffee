@@ -1,0 +1,7 @@
+# config/packages/prod/framework.yaml
+framework:
+    cache:
+        pools:
+            cache.app:
+                default_lifetime: 0
+    # or simply disable cache warming that touches the DB
