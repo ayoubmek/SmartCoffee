@@ -26,8 +26,12 @@
 
           <!-- IMAGE -->
           <div class="position-relative">
-            <img src="{{ asset(produit.image) }}" alt="{{ produit.nom }}" class="img-fluid w-100" style="object-fit:cover; height:320px;">
-            <span class="position-absolute top-0 end-0 m-3">
+<img src="{{ asset(produit.image) }}"
+     alt="{{ produit.nom }}"
+     class="img-fluid"
+     style="max-width: 100%; height: auto;
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 1rem;">            <span class="position-absolute top-0 end-0 m-3">
               <i class="ki-duotone ki-heart-circle text-danger fs-1"></i>
             </span>
           </div>
@@ -43,22 +47,23 @@
                   {% if produit.prixAncien %}
                     <span class="text-gray-400 text-decoration-line-through">DT {{ produit.prixAncien }}</span>
                   {% endif %}
+                  {% if produit.reduction %}
                   <span class="badge badge-light-success fw-bold fs-7">{{ produit.reduction ?? 0 }} % OFF</span>
+                  {% endif %}
                 </div>
               </div>
 
               <div class="text-end">
                 <div class="d-flex align-items-center justify-content-end gap-1">
                   <i class="ki-duotone ki-star text-warning fs-5"></i>
-                  <span class="fw-bold text-dark fs-5">4.5</span>
-                  <span class="text-muted fs-7">(345)</span>
+                  <span class="fw-bold text-dark fs-5">4.6  </span>
+                  <span class="text-muted fs-7">(34)</span>
                 </div>
               </div>
             </div>
 
-            <hr class="text-gray-200 my-4">
+            <hr class="text-gray-200 my-4"> 
 
-            <!-- CATEGORY -->
             <div class="mb-4">
               <span class="badge badge-light-primary fs-7 fw-semibold px-3 py-2">
                 {{ produit.categorie.nom }}
@@ -67,10 +72,8 @@
 
             <!-- DESCRIPTION -->
             <div class="mb-5">
-              <h5 class="fw-bold text-gray-800 mb-2">Description</h5>
-                <p>
-                A delicious <strong>{{ produit.nom }}</strong> carefully prepared at Café Bliss.
-                
+              <h5 class="fw-bold text-gray-1000 mb-2">Description</h5>
+                <p>                
                 {% if produit.description %}
                     <br>
                     <span>{{ produit.description }}</span>
@@ -83,20 +86,13 @@
                 </p>
 
             </div>
+ 
 
-            <!-- CTA -->
-            <div class="d-grid">
-              <button class="btn btn-danger btn-lg fw-semibold">
-                <i class="ki-duotone ki-shopping-cart fs-2 me-2"></i>
-                Add to Cart
-              </button>
-            </div>
-
-          </div><!-- /.card-body -->
-        </div><!-- /.card -->
-      </div><!-- /.col -->
-    </div><!-- /.row -->
-  </div><!-- /.container -->
+          </div> 
+        </div> 
+      </div> 
+    </div> 
+  </div> 
 
   <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
   <script src="{{ asset('assets/js/scripts.bundle.js') }}"></script>

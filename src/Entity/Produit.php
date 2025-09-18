@@ -3,6 +3,8 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Categorie;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[ORM\Entity(repositoryClass: "App\Repository\ProduitRepository")]
 class Produit
@@ -12,13 +14,14 @@ class Produit
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
+    #[ORM\Column(type: 'integer')]
+    private int $position = 0;
+
     #[ORM\Column(length: 150)]
     private ?string $nom = null;
 
-
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description = null;
-
 
     #[ORM\Column(length: 255)]
     private ?string $image = null;
@@ -32,27 +35,53 @@ class Produit
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $reduction = null;
 
-    // --- Relation ManyToOne vers Categorie ---
     #[ORM\ManyToOne(targetEntity: Categorie::class, inversedBy: "produits")]
     #[ORM\JoinColumn(nullable: false)]
     private ?Categorie $categorie = null;
 
-    // --- Getters / Setters ---
+    // =============================
+    // Unmapped file property
+    // =============================
+    private ?File $imageFile = null;
+
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    public function setImageFile(?File $imageFile): self
+    {
+        $this->imageFile = $imageFile;
+
+        // Optional: reset the image name if a new file is uploaded
+        if ($imageFile instanceof UploadedFile) {
+            $this->image = null; // or trigger update timestamp if using VichUploader
+        }
+
+        return $this;
+    }
+
+    // =============================
+    // Getters / Setters
+    // =============================
+
+    public function getPosition(): int
+{
+    return $this->position;
+}
+
+public function setPosition(int $position): self
+{
+    $this->position = $position;
+    return $this;
+}
     public function getId(): ?int { return $this->id; }
     public function getNom(): ?string { return $this->nom; }
     public function setNom(string $nom): static { $this->nom = $nom; return $this; }
 
+    public function getDescription(): ?string { return $this->description; }
+    public function setDescription(?string $description): static { $this->description = $description; return $this; }
 
-        public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(?string $description): static
-    {
-        $this->description = $description;
-        return $this;
-    }
     public function getImage(): ?string { return $this->image; }
     public function setImage(string $image): static { $this->image = $image; return $this; }
 
