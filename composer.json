@@ -5,6 +5,8 @@
     "prefer-stable": true,
     "require": {
         "php": ">=8.2",
+        "ext-pdo_sqlite": "*",
+        "ext-intl": "*",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "cloudinary/cloudinary_php": "^3.1",
