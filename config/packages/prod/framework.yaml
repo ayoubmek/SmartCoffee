@@ -1,6 +1,0 @@
-# config/packages/prod/framework.yaml
-framework:
-    # do NOT open the DB/Redis/etc. while warming cache
-    cache:
-        app: cache.adapter.filesystem   # or null adapter
-        system: cache.adapter.filesystem

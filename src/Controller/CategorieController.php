@@ -64,17 +64,24 @@ public function new(Request $request, EntityManagerInterface $em): Response
     if ($form->isSubmitted() && $form->isValid()) {
         /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
         $file = $form->get('iconeFile')->getData();
+if ($file) {
+    // Keep the original filename
+    $originalFilename = $file->getClientOriginalName();
 
-        if ($file) {
-            $original = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-            $safeName = preg_replace('/[^A-Za-z0-9\-]/', '', $original)
-                      . '-' . uniqid() . '.' . $file->guessExtension();
+    // Define target directory
+    $targetDir = $this->getParameter('kernel.project_dir') . '/public/assets/media/ch';
+    $targetPath = $targetDir . '/' . $originalFilename;
 
-            $targetDir = $this->getParameter('kernel.project_dir') . '/public/assets/media/ch';
-            $file->move($targetDir, $safeName);
+    // Check if the file already exists
+    if (!file_exists($targetPath)) {
+        // Move the file if it doesn't exist
+        $file->move($targetDir, $originalFilename);
+    }
 
-            $categorie->setIcone('assets/media/ch/' . $safeName);
-        }
+    // Save relative path in DB
+    $categorie->setIcone('assets/media/ch/' . $originalFilename);
+}
+
 
         $em->persist($categorie);
         $em->flush();
@@ -123,17 +130,25 @@ public function delete(Categorie $categorie, EntityManagerInterface $em, Request
 }
 
  
-
-    private function handleIconeUpload(?UploadedFile $file, Categorie $cat, SluggerInterface $slugger): void
-    {
-        if (!$file) return;
-
-        $original = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-        $safeName = $slugger->slug($original).'-'.uniqid().'.'.$file->guessExtension();
-
-        $targetDir = $this->getParameter('kernel.project_dir').'/public/assets/media/ch';
-        $file->move($targetDir, $safeName);
-
-        $cat->setIcone('assets/media/ch/'.$safeName);
+private function handleIconeUpload(?UploadedFile $file, Categorie $cat, SluggerInterface $slugger): void
+{
+    if (!$file) {
+        return;
     }
+
+    // Keep original filename (with extension)
+    $originalFilename = $file->getClientOriginalName();
+
+    $targetDir = $this->getParameter('kernel.project_dir') . '/public/assets/media/ch';
+    $targetPath = $targetDir . '/' . $originalFilename;
+
+    // If file does not exist, move it
+    if (!file_exists($targetPath)) {
+        $file->move($targetDir, $originalFilename);
+    }
+
+    // Save relative path in DB
+    $cat->setIcone('assets/media/ch/' . $originalFilename);
+}
+
 }

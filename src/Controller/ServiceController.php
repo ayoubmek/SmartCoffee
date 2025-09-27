@@ -55,7 +55,6 @@ public function index(EntityManagerInterface $em): Response
 }
 
 
-
     #[Route('/prod/{id}', name: 'app_produit_details')]
 public function details(Produit $produit): Response
 {
@@ -63,7 +62,6 @@ public function details(Produit $produit): Response
         'produit' => $produit,
     ]);
 }
-
 
 
 }

@@ -1,7 +1,13 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Produit - {{ produit.nom }}{% endblock %}
-
+{% block page_css %}
+<style>
+    [data-bs-theme=light] body:not(.app-blank) {
+        background-image: url("{{ asset('assets/media/patterns/header-bg1.jpg') }}") !important;
+    }
+</style>
+{% endblock %}
 {% block body %}
 <div id="kt_content_container" class="d-flex flex-column-fluid align-items-start container-xxl">
     <!--begin::Post-->
@@ -122,12 +128,7 @@
                 </div>
                 <!--end::Pricing-->
 
-                <!--begin::Actions-->
-                <div class="d-flex justify-content-start gap-3">
-                     <a href="{{ path('app_produit_edit', {'id': produit.id}) }}" class="btn btn-primary">Edit</a>
-                    {{ include('produit/_delete_form.html.twig') }}
-                </div>
-                <!--end::Actions-->
+               
             </div>
             <!--end::Main column-->
         </form>
