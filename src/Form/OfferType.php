@@ -25,7 +25,7 @@ class OfferType extends AbstractType
                 'constraints' => [
                     new File([
                         'maxSize'   => '2M',
-                        'mimeTypes' => ['image/png', 'image/jpg', 'image/jpeg'],
+                        'mimeTypes' => ['image/png', 'image/jpg', 'image/jpeg','image/webp'],
                     ]),
                 ],
                 'attr' => ['class' => 'd-none'], // hidden input, customize in template

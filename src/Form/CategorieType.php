@@ -16,19 +16,20 @@ class CategorieType extends AbstractType
     {
         $builder
             ->add('nom', TextType::class, [
-                'label' => 'Name'
+                'label' => 'Name',
             ])
             ->add('iconeFile', FileType::class, [
                 'label'       => 'Icon image',
-                'mapped'      => false,         
+                'mapped'      => false,           
                 'required'    => false,
                 'constraints' => [
-                    new File([
-                        'maxSize'   => '2M',
-                        'mimeTypes' => ['image/png', 'image/jpg', 'image/jpeg'],
-                    ])
+                    new File(
+                        maxSize: '2M', 
+                        mimeTypes: ['image/png', 'image/jpg', 'image/jpeg','image/webp'], 
+                        mimeTypesMessage: 'Please upload a valid image (JPG, JPEG, PNG, or WEBP).'
+                    )
                 ],
-                'attr' => ['class' => 'd-none']    
+                'attr' => ['class' => 'd-none'],  
             ]);
     }
 

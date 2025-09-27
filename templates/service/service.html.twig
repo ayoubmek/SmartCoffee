@@ -11,7 +11,21 @@
     <link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 </head>
 <body id="kt_body" class="header-fixed header-tablet-and-mobile-fixed toolbar-enabled">
+<style>.bg-gold {
+    background: linear-gradient(135deg, #e3c77a, #caa44c, #8c6e2f, #caa44c);
+    color: white; /* You can change this to black or #2d2d2d if contrast is low */
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(202, 164, 76, 0.7),  /* Outer glow */
+                inset 0 0 5px rgba(255, 255, 255, 0.3); /* Inner highlight */
+}
+.gold-text {
+    background: linear-gradient(135deg, #c79b33ff, #ffbc21ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
 
+</style>
 <script>
     var defaultThemeMode = "light";
     var themeMode;
@@ -78,7 +92,7 @@
                             <div class="d-flex align-items-center me-lg-n2 ms-1 ms-lg-3" id="kt_header_user_menu_toggle">
                                 <div class="header-logo">
                                     <a href="">
-                                        <img alt="Logo" src="assets/media/ch/logoW.webp" class="logo-default h-30px">
+                                        <img alt="Logo" src="assets/media/ch/logoB.webp" class="logo-default h-40px">
                                         <img alt="Logo" src="assets/media/ch/logoB.webp" class="logo-sticky h-40px">
                                     </a>
                                 </div>
@@ -101,6 +115,7 @@
                     </div>
                 </div>
             </div> 
+			<br><br><br>
             <div id="kt_content_container" class="d-flex flex-column-fluid">
                 <div class="content flex-row-fluid" id="kt_content">
                     <div class="container-xxl"> 
@@ -173,7 +188,7 @@
 														data-bs-toggle="tab"
 														data-bs-target="#kt_stats_widget_2_tab_{{ categorie.id }}">
 															<img src="{{ asset(categorie.icone) }}"
-																class="w-45px bg-secondary rounded-circle p-1" alt="{{ categorie.nom }}" 	loading="lazy"
+																class="w-45px bg-gold rounded-circle p-0 d-flex align-items-center justify-content-center" alt="{{ categorie.nom }}" 	loading="lazy"
 																					decoding="async">
 															<span class="nav-text text-dark fw-bold fs-6 lh-1 mt-1">{{ categorie.nom }}</span>
 														</a>
@@ -233,13 +248,16 @@
 																		</div>
 
 																		<div>
-																			<span class="text-success fw-bold fs-5">DT {{ produit.prix|number_format(0, ',', '.') }}</span>
+																			<span class="fw-bold fs-6 ms-1 gold-text">
+																				DT {{ produit.prix|number_format(0, ',', '.') }}
+																			</span>
 																			{% if produit.prixAncien %}
-																				<span class="text-gray-400 text-decoration-line-through fs-7 ms-1">
+																				<span class="fw-bold fs-6 ms-1 gold-text">
 																					DT {{ produit.prixAncien }}
 																				</span>
 																			{% endif %}
 																		</div>
+
 																	</div>
 																</div>
 															</div>
@@ -261,9 +279,9 @@
 
 <div class="card mb-4 bg-light text-center mb-4">
     <div class="card-body py-12">
-        <a href="https://www.facebook.com/p/Caf%C3%A8te-Du-Golf-61576881780257/" class="mx-4"><img src="assets/media/svg/brand-logos/facebook-4.svg" class="h-30px my-2" alt=""></a>
-        <a href="https://www.instagram.com/cafete_du_golf/reels/?hl=en" class="mx-4"><img src="assets/media/svg/brand-logos/instagram-2-1.svg" class="h-30px my-2" alt=""></a>
-        <a href="#" class="mx-4"><img src="assets/media/svg/brand-logos/pinterest-p.svg" class="h-30px my-2" alt=""></a>
+        <a href=" " class="mx-4"><img src="assets/media/svg/brand-logos/facebook-4.svg" class="h-30px my-2" alt=""></a>
+        <a href=" " class="mx-4"><img src="assets/media/svg/brand-logos/instagram-2-1.svg" class="h-30px my-2" alt=""></a>
+        <a href=" " class="mx-4"><img src="assets/media/svg/brand-logos/tiktok-svgrepo-com.svg" class="h-30px my-2" alt=""></a>
     </div>
 </div>
 

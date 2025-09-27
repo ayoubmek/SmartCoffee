@@ -5,45 +5,53 @@ namespace App\Controller;
 use App\Entity\Categorie;
 use App\Entity\Produit;
 use App\Form\ProduitType;
-use App\Repository\ProduitRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
-
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/produit')]
 final class ProduitController extends AbstractController
 {
+    #[Route(name: 'app_produit_index', methods: ['GET'])]
+    public function index(EntityManagerInterface $em, SessionInterface $session): Response
+    {
+        // 1️⃣ Protect page: check login
+        if (!$session->get('logged_in')) {
+            return $this->redirectToRoute('app_login');
+        }
 
-#[Route(name: 'app_produit_index', methods: ['GET'])]
-public function index(EntityManagerInterface $em): Response
-{
-    $produit = new Produit();
-    $form = $this->createForm(ProduitType::class, $produit);
-    
-    // Get all products ordered by position ASC
-    $produits = $em->getRepository(Produit::class)->findBy([], ['position' => 'ASC']);
-    
-    // Get all categories for the filter
-    $categories = $em->getRepository(Categorie::class)->findAll();
-    
-    // Create edit forms for each product
-    $editForms = [];
-    foreach ($produits as $product) {
-        $editForms[$product->getId()] = $this->createForm(ProduitType::class, $product)->createView();
+        $produit = new Produit();
+        $form = $this->createForm(ProduitType::class, $produit);
+
+        $produits = $em->getRepository(Produit::class)->findBy([], ['position' => 'ASC']);
+        $categories = $em->getRepository(Categorie::class)->findAll();
+
+        $editForms = [];
+        foreach ($produits as $product) {
+            $editForms[$product->getId()] = $this->createForm(ProduitType::class, $product)->createView();
+        }
+
+        $response = $this->render('produit/index.html.twig', [
+            'produits'   => $produits,
+            'categories' => $categories,
+            'form'       => $form->createView(),
+            'editForms'  => $editForms,
+        ]);
+
+        // 2️⃣ Prevent browser caching
+        $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
+        $response->headers->set('Pragma', 'no-cache');
+        $response->headers->set('Expires', '0');
+
+        return $response;
     }
 
-    return $this->render('produit/index.html.twig', [
-        'produits' => $produits,
-        'categories' => $categories, // Pass categories to the template
-        'form' => $form->createView(),
-        'editForms' => $editForms,
-    ]);
-}
 
     /* ---------- SHOW ---------- */
 #[Route('/{id}', name: 'app_produit_show', methods: ['GET'])]
@@ -65,18 +73,24 @@ public function new(Request $request, EntityManagerInterface $em): Response
     if ($form->isSubmitted() && $form->isValid()) {
         /** @var UploadedFile|null $file */
         $file = $form->get('imageFile')->getData(); // use imageFile (unmapped property)
+if ($file) {
+    // Keep original filename (with extension)
+    $originalFilename = $file->getClientOriginalName();
 
-        if ($file) {
-            $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-            $safeName = preg_replace('/[^A-Za-z0-9\-]/', '', $originalName)
-                      . '-' . uniqid() . '.' . $file->guessExtension();
+    // Define target directory
+    $targetDir = $this->getParameter('kernel.project_dir') . '/public/assets/media/products';
+    $targetPath = $targetDir . '/' . $originalFilename;
 
-            $targetDir = $this->getParameter('kernel.project_dir') . '/public/assets/media/products';
-            $file->move($targetDir, $safeName);
+    // Check if the file already exists
+    if (!file_exists($targetPath)) {
+        // Move only if the file does not exist
+        $file->move($targetDir, $originalFilename);
+    }
 
-            // Set the image path (to store in DB)
-            $produit->setImage('assets/media/products/' . $safeName);
-        }
+    // Save relative path in DB
+    $produit->setImage('assets/media/products/' . $originalFilename);
+}
+
 
         $em->persist($produit);
         $em->flush();
@@ -116,21 +130,24 @@ public function edit(Request $request, Produit $produit, EntityManagerInterface 
         return $this->redirect($referer ?? $this->generateUrl('app_produit_index'));
     }
 
-    /* ---------- UPLOAD HELPER ---------- */
-    private function handleImageUpload(?UploadedFile $file, Produit $produit, SluggerInterface $slugger): void
-    {
-        if (!$file) {
-            return;
-        }
-
-        $original = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-        $safeName = $slugger->slug($original) . '-' . uniqid() . '.' . $file->guessExtension();
-
-        $targetDir = $this->getParameter('kernel.project_dir') . '/public/assets/media/produits';
-        $file->move($targetDir, $safeName);
-
-        $produit->setImage('assets/media/produits/' . $safeName);
+  /* ---------- UPLOAD HELPER ---------- */
+private function handleImageUpload(?UploadedFile $file, Produit $produit, SluggerInterface $slugger): void
+{
+    if (!$file) {
+        return;
     }
+ 
+    $originalFilename = $file->getClientOriginalName();
+
+    $targetDir = $this->getParameter('kernel.project_dir') . '/public/assets/media/ch';
+    $targetPath = $targetDir . '/' . $originalFilename;
+ 
+    if (!file_exists($targetPath)) {
+        $file->move($targetDir, $originalFilename);
+    }
+ 
+    $produit->setImage('assets/media/ch/' . $originalFilename);
+}
 
 
     #[Route('/products/swap', name: 'app_products_swap', methods: ['POST'])]

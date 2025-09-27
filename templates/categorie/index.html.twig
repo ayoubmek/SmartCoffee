@@ -165,7 +165,7 @@
 											'attr': {
 												'id': 'categorie_iconeFile',  
 												'class': 'd-none',
-												'accept': '.png,.jpg,.jpeg'
+												'accept': '.png,.jpg,.jpeg,.webp'
 											}
 										}) }}
 									</label>
@@ -174,7 +174,7 @@
  
 								</div>
 
-								<div class="form-text">Allowed file types: png, jpg, jpeg.</div>
+								<div class="form-text">Allowed file types: png, jpg, jpeg ,webp.</div>
 								{{ form_errors(form.iconeFile) }}
 							</div>
 						</div>
@@ -250,7 +250,7 @@
                                     'label': false,
                                     'attr': {
                                         'class': 'd-none',
-                                        'accept': '.png,.jpg,.jpeg',
+                                        'accept': '.png,.jpg,.jpeg,.webp',
                                         'data-edit-id': categorie.id
                                     }
                                 }) }}
@@ -260,7 +260,7 @@
  
                         </div>
 
-                        <div class="form-text">Allowed file types: png, jpg, jpeg.</div>
+                        <div class="form-text">Allowed file types: png, jpg, jpeg,webp.</div>
                         {{ form_errors(editForms[categorie.id].iconeFile) }}
                     </div>
                 </div>

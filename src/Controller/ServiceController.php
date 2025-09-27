@@ -55,13 +55,15 @@ public function index(EntityManagerInterface $em): Response
 }
 
 
-    #[Route('/produit/{id}', name: 'app_produit_details')]
+
+    #[Route('/prod/{id}', name: 'app_produit_details')]
 public function details(Produit $produit): Response
 {
     return $this->render('produit/details.html.twig', [
         'produit' => $produit,
     ]);
 }
+
 
 
 }

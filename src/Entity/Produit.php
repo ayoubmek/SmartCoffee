@@ -12,10 +12,10 @@ class Produit
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private ?int $id = null;
+    private ?int $id = null;   
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $position = null;    
 
-    #[ORM\Column(type: 'integer')]
-    private int $position = 0;
 
     #[ORM\Column(length: 150)]
     private ?string $nom = null;
@@ -36,8 +36,9 @@ class Produit
     private ?int $reduction = null;
 
     #[ORM\ManyToOne(targetEntity: Categorie::class, inversedBy: "produits")]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     private ?Categorie $categorie = null;
+
 
     // =============================
     // Unmapped file property
@@ -64,17 +65,18 @@ class Produit
     // =============================
     // Getters / Setters
     // =============================
-
-    public function getPosition(): int
+public function getPosition(): ?int
 {
     return $this->position;
 }
 
-public function setPosition(int $position): self
+public function setPosition(?int $position): self
 {
     $this->position = $position;
+
     return $this;
 }
+
     public function getId(): ?int { return $this->id; }
     public function getNom(): ?string { return $this->nom; }
     public function setNom(string $nom): static { $this->nom = $nom; return $this; }

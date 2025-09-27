@@ -56,17 +56,21 @@ public function new(Request $request, EntityManagerInterface $em): Response
 
     if ($form->isSubmitted() && $form->isValid()) {
         /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
-        $file = $form->get('imageFile')->getData(); // ⚠️ needs a File field in OfferType
+        $file = $form->get('imageFile')->getData();
 
         if ($file) {
-            $original = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-            $safeName = preg_replace('/[^A-Za-z0-9\-]/', '', $original)
-                      . '-' . uniqid() . '.' . $file->guessExtension();
+            // Keep the original filename (with extension)
+            $originalFilename = $file->getClientOriginalName();
 
-            $targetDir = $this->getParameter('kernel.project_dir') . '/public/uploads/offers';
-            $file->move($targetDir, $safeName);
+            // Define target directory
+            $targetDir = $this->getParameter('kernel.project_dir') . '/public/assets/media/ch';
+            $targetPath = $targetDir . '/' . $originalFilename;
 
-            $offer->setImage('uploads/offers/' . $safeName);
+            // Move the file (overwrite if it exists)
+            $file->move($targetDir, $originalFilename);
+
+            // Save relative path in DB
+            $offer->setImage('assets/media/ch/' . $originalFilename);
         }
 
         $em->persist($offer);
@@ -74,11 +78,7 @@ public function new(Request $request, EntityManagerInterface $em): Response
 
         return $this->redirectToRoute('app_offer_index', [], Response::HTTP_SEE_OTHER);
     }
-
-    return $this->render('offer/new.html.twig', [
-        'offer' => $offer,
-        'form'  => $form,
-    ]);
+ 
 }
 
 
@@ -90,23 +90,37 @@ public function new(Request $request, EntityManagerInterface $em): Response
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_offer_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Offer $offer, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(OfferType::class, $offer);
-        $form->handleRequest($request);
+   #[Route('/{id}/edit', name: 'app_offer_edit', methods: ['GET', 'POST'])]
+public function edit(Request $request, Offer $offer, EntityManagerInterface $em): Response
+{
+    $form = $this->createForm(OfferType::class, $offer);
+    $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+    if ($form->isSubmitted() && $form->isValid()) {
+        /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
+        $file = $form->get('imageFile')->getData();
 
-            return $this->redirectToRoute('app_offer_index', [], Response::HTTP_SEE_OTHER);
+        if ($file) {
+            // Keep the original filename (with extension)
+            $originalFilename = $file->getClientOriginalName();
+
+            // Define target directory
+            $targetDir = $this->getParameter('kernel.project_dir') . '/public/assets/media/ch';
+            $targetPath = $targetDir . '/' . $originalFilename;
+
+            // Move the file (overwrite if it exists)
+            $file->move($targetDir, $originalFilename);
+
+            // Save relative path in DB
+            $offer->setImage('assets/media/ch/' . $originalFilename);
         }
 
-        return $this->render('offer/edit.html.twig', [
-            'offer' => $offer,
-            'form' => $form,
-        ]);
-    }
+        $em->flush();
+
+        return $this->redirectToRoute('app_offer_index', [], Response::HTTP_SEE_OTHER);
+    } 
+}
+
 
 #[Route('/{id}/delete', name: 'app_offer_delete', methods: ['GET'])]
 public function delete(Offer $offer, EntityManagerInterface $em, Request $request): Response
@@ -123,15 +137,24 @@ public function delete(Offer $offer, EntityManagerInterface $em, Request $reques
 
 private function handleImageUpload(?UploadedFile $file, Offer $offer, SluggerInterface $slugger): void
 {
-    if (!$file) return;
+    if (!$file) {
+        return;
+    }
 
-    $original = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-    $safeName = $slugger->slug($original).'-'.uniqid().'.'.$file->guessExtension();
+    // Keep original filename (with extension)
+    $originalFilename = $file->getClientOriginalName();
 
-    $targetDir = $this->getParameter('kernel.project_dir').'/public/uploads/offers';
-    $file->move($targetDir, $safeName);
+    $targetDir = $this->getParameter('kernel.project_dir') . '/public/assets/media/ch';
+    $targetPath = $targetDir . '/' . $originalFilename;
 
-    $offer->setImage('uploads/offers/'.$safeName);
+    // If file does not exist, move it
+    if (!file_exists($targetPath)) {
+        $file->move($targetDir, $originalFilename);
+    }
+
+    // Save relative path in DB
+    $offer->setImage('assets/media/ch/' . $originalFilename);
 }
+
 
 }

@@ -19,12 +19,8 @@
 <body id="kt_body" class="bg-white">
   <div class="container py-5">
     <div class="row justify-content-center">
-      <div class="col-lg-8 col-xl-6">
-
-        <!-- PRODUCT CARD -->
-        <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
-
-          <!-- IMAGE -->
+      <div class="col-lg-8 col-xl-6"> 
+        <div class="card shadow-sm border-0 rounded-4 overflow-hidden"> 
           <div class="position-relative">
 <img src="{{ asset(produit.image) }}"
      alt="{{ produit.nom }}"
@@ -35,11 +31,9 @@
               <i class="ki-duotone ki-heart-circle text-danger fs-1"></i>
             </span>
           </div>
-
-          <!-- BODY -->
+ 
           <div class="card-body p-5">
-
-            <!-- TOP LINE -->
+ 
             <div class="d-flex justify-content-between align-items-start mb-3">
               <div>
                 <h2 class="fw-bolder text-gray-900 mb-1">{{ produit.nom }}</h2>
@@ -72,20 +66,20 @@
 
             <!-- DESCRIPTION -->
             <div class="mb-5">
-              <h5 class="fw-bold text-gray-1000 mb-2">Description</h5>
-                <p>                
-                {% if produit.description %}
-                    <br>
-                    <span>{{ produit.description }}</span>
-                {% endif %}
-                
-                {% if produit.reduction %}
-                    <br>
-                    Enjoy <strong>{{ produit.reduction }}% discount</strong> for a limited time!
-                {% endif %}
-                </p>
+              {% if produit.description %}
+                  <h5 class="fw-bold text-gray-1000 mb-2">Description</h5>
+                  <p>                
+                      <br>
+                      <span>{{ produit.description }}</span>
+              {% endif %}
+              
+              {% if produit.reduction %}
+                  <br>
+                  Profitez de <strong>{{ produit.reduction }}% de réduction</strong> pendant une durée limitée !
+              {% endif %}
+              </p>
+          </div>
 
-            </div>
  
 
           </div> 
