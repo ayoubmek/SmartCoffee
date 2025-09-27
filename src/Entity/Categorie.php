@@ -20,7 +20,7 @@ class Categorie
     private ?string $nom = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $icone = null;   
+    private ?string $icone = null;   // <- stores "assets/media/ch/filename.ext"
 
     #[ORM\OneToMany(mappedBy: "categorie", targetEntity: Produit::class, cascade: ["persist", "remove"])]
     private Collection $produits;

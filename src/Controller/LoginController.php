@@ -17,9 +17,9 @@ final class LoginController extends AbstractController
             $password = $request->request->get('password');
 
             // static check (you can change values)
-            if ($username === 'admin' && $password === 'moez561') {
+            if ($username === 'admin' && $password === '1234') {
                 $session->set('logged_in', true);
-                return $this->redirectToRoute('app_produit_index');
+                return $this->redirectToRoute('app_categorie_index');
             }
 
             $this->addFlash('error', 'Invalid credentials!');

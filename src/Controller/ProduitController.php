@@ -61,6 +61,8 @@ public function show(Produit $produit): Response
         'produit' => $produit,
     ]);
 }
+
+/* ---------- CREATE ---------- */
 #[Route('/new', name: 'app_produit_new', methods: ['GET', 'POST'])]
 public function new(Request $request, EntityManagerInterface $em): Response
 {
@@ -70,31 +72,28 @@ public function new(Request $request, EntityManagerInterface $em): Response
 
     if ($form->isSubmitted() && $form->isValid()) {
         /** @var UploadedFile|null $file */
-        $file = $form->get('imageFile')->getData();
+        $file = $form->get('imageFile')->getData(); // use imageFile (unmapped property)
+if ($file) {
+    // Keep original filename (with extension)
+    $originalFilename = $file->getClientOriginalName();
 
-        if ($file) {
-            // Keep original filename (with extension)
-            $originalFilename = $file->getClientOriginalName();
+    // Define target directory
+    $targetDir = $this->getParameter('kernel.project_dir') . '/public/assets/media/products';
+    $targetPath = $targetDir . '/' . $originalFilename;
 
-            // Define target directory
-            $targetDir = $this->getParameter('kernel.project_dir') . '/public/assets/media/ch';
-            $targetPath = $targetDir . '/' . $originalFilename;
+    // Check if the file already exists
+    if (!file_exists($targetPath)) {
+        // Move only if the file does not exist
+        $file->move($targetDir, $originalFilename);
+    }
 
-            // Move the file if it doesn't exist
-            if (!file_exists($targetPath)) {
-                $file->move($targetDir, $originalFilename);
-            }
+    // Save relative path in DB
+    $produit->setImage('assets/media/products/' . $originalFilename);
+}
 
-            $produit->setImage('assets/media/ch/' . $originalFilename);
-        }
 
-        // Persist to get the ID
         $em->persist($produit);
         $em->flush();
-
-        // Set position to the ID of the produit
-        $produit->setPosition($produit->getId());
-        $em->flush(); // update the record with position
 
         return $this->redirectToRoute('app_produit_index', [], Response::HTTP_SEE_OTHER);
     }
