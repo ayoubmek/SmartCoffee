@@ -13,6 +13,12 @@
   <style>
     body { background:#ffffff !important; }
     .hero-img { max-width:100%; height:auto; max-height:40vh; object-fit:cover; }
+    .gold-text {
+    background: linear-gradient(135deg, #c79b33ff, #ffbc21ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
   </style>
 </head>
 
@@ -36,7 +42,11 @@
  
             <div class="d-flex justify-content-between align-items-start mb-3">
               <div>
-                <h2 class="fw-bolder text-gray-900 mb-1">{{ produit.nom }}</h2>
+                <h2 class="fw-bolder text-gray-900 mb-1">{{ produit.nom }}   <span class="badge badge-light-primary fs-7 fw-semibold px-3 py-2">
+                {{ produit.categorie.nom }}
+              </span></h2>
+                <h1 class="fw-bold ms-1 gold-text">{{ produit.prix }} DT</h1>
+
                 <div class="d-flex align-items-center gap-2">
                   {% if produit.prixAncien %}
                     <span class="text-gray-400 text-decoration-line-through">DT {{ produit.prixAncien }}</span>
@@ -55,16 +65,27 @@
                 </div>
               </div>
             </div>
+     <table class="table">
+                <thead>
+                    <tr>
+                        <th>Taille</th>
+                        <th>Prix</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for taille in produit.tailles %}
+                        <tr>
+                            <td>{{ taille.libelle }}</td>
+                            <td class="gold-text">{{ taille.prix|number_format(0, ',', '.')  }} DT</td>
+                        </tr>
+                    {% else %}
+
+                    {% endfor %}
+                </tbody>
+            </table>
 
             <hr class="text-gray-200 my-4"> 
-
-            <div class="mb-4">
-              <span class="badge badge-light-primary fs-7 fw-semibold px-3 py-2">
-                {{ produit.categorie.nom }}
-              </span>
-            </div>
-
-            <!-- DESCRIPTION -->
+ 
             <div class="mb-5">
               {% if produit.description %}
                   <h5 class="fw-bold text-gray-1000 mb-2">Description</h5>
@@ -79,7 +100,7 @@
               {% endif %}
               </p>
           </div>
-
+       
  
 
           </div> 
