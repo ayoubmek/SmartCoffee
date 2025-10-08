@@ -273,36 +273,32 @@
 										</div>
 									</div>
 								</div>
-			
 					</div>
 				</div>
 			</div>
+	<div class="card mb-4 bg-light text-center mb-4">
+		<div class="card-body py-12">
+			<a href=" " class="mx-4"><img src="assets/media/svg/brand-logos/facebook-4.svg" class="h-30px my-2" alt=""></a>
+			<a href="https://www.instagram.com/bon_temps_cafee/" class="mx-4"><img src="assets/media/svg/brand-logos/instagram-2-1.svg" class="h-30px my-2" alt=""></a>
+			<a href=" " class="mx-4"><img src="assets/media/svg/brand-logos/tiktok-svgrepo-com.svg" class="h-30px my-2" alt=""></a>
+		</div>
+	</div>
 
-<div class="card mb-4 bg-light text-center mb-4">
-    <div class="card-body py-12">
-        <a href=" " class="mx-4"><img src="assets/media/svg/brand-logos/facebook-4.svg" class="h-30px my-2" alt=""></a>
-        <a href=" " class="mx-4"><img src="assets/media/svg/brand-logos/instagram-2-1.svg" class="h-30px my-2" alt=""></a>
-        <a href=" " class="mx-4"><img src="assets/media/svg/brand-logos/tiktok-svgrepo-com.svg" class="h-30px my-2" alt=""></a>
-    </div>
-</div>
-
-<script>var hostUrl = "assets/";</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('[data-bs-target^="#kt_stats_widget_2_tab_"]').forEach(link => {
-        link.addEventListener('click', e => {
-            e.preventDefault();
-            const target = document.querySelector(link.dataset.bsTarget);
-            if (!target) return;
-            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('show', 'active'));
-            target.classList.add('show', 'active');
-        });
-    });
-});
-</script>
-
-<script src="assets/plugins/global/plugins.bundle.js"></script>
-<script src="assets/js/scripts.bundle.js"></script>
-</body>
+	<script>var hostUrl = "assets/";</script>
+	<script>
+	document.addEventListener('DOMContentLoaded', () => {
+		document.querySelectorAll('[data-bs-target^="#kt_stats_widget_2_tab_"]').forEach(link => {
+			link.addEventListener('click', e => {
+				e.preventDefault();
+				const target = document.querySelector(link.dataset.bsTarget);
+				if (!target) return;
+				document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('show', 'active'));
+				target.classList.add('show', 'active');
+			});
+		});
+	});
+	</script>
+	<script src="assets/plugins/global/plugins.bundle.js"></script>
+	<script src="assets/js/scripts.bundle.js"></script>
+	</body>
 </html>
