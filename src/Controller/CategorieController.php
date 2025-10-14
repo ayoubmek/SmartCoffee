@@ -9,9 +9,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route; 
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\String\Slugger\AsciiSlugger; 
+use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
@@ -54,43 +54,46 @@ public function index(Request $request, EntityManagerInterface $em, SessionInter
 
 
     /* ---------- CREATE ---------- */
-   #[Route('/new', name: 'app_categorie_new', methods: ['GET', 'POST'])]
-public function new(Request $request, EntityManagerInterface $em): Response
-{
-    $categorie = new Categorie();
-    $form = $this->createForm(CategorieType::class, $categorie);
-    $form->handleRequest($request);
+    #[Route('/new', name: 'app_categorie_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $em): Response
+    {
+        $categorie = new Categorie();
+        $form = $this->createForm(CategorieType::class, $categorie);
+        $form->handleRequest($request);
 
-    if ($form->isSubmitted() && $form->isValid()) {
-        /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
-        $file = $form->get('iconeFile')->getData();
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
+            $file = $form->get('iconeFile')->getData();
 
-        if ($file) {
-            $original = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-            $safeName = preg_replace('/[^A-Za-z0-9\-]/', '', $original)
-                      . '-' . uniqid() . '.' . $file->guessExtension();
+            if ($file) {
+                // Use the real original file name
+                $originalName = $file->getClientOriginalName();
 
-            $targetDir = $this->getParameter('kernel.project_dir') . '/public/assets/media/ch';
-            $file->move($targetDir, $safeName);
+                // Define the target directory
+                $targetDir = $this->getParameter('kernel.project_dir') . '/public/assets/media/ch';
 
-            $categorie->setIcone('assets/media/ch/' . $safeName);
+                // Move the file using its real name
+                $file->move($targetDir, $originalName);
+
+                // Save the path in the database
+                $categorie->setIcone('assets/media/ch/' . $originalName);
+            }
+
+            $em->persist($categorie);
+            $em->flush();
+
+            return $this->redirectToRoute('app_categorie_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        $em->persist($categorie);
-        $em->flush();
-
-        return $this->redirectToRoute('app_categorie_index', [], Response::HTTP_SEE_OTHER);
+        return $this->render('categorie/new.html.twig', [
+            'categorie' => $categorie,
+            'form' => $form,
+        ]);
     }
 
-    return $this->render('categorie/new.html.twig', [
-        'categorie' => $categorie,
-        'form'      => $form,
-    ]);
-}
- 
 
 
-/* ---------- UPDATE ---------- */
+    /* ---------- UPDATE ---------- */
 #[Route('/{id}/edit', name: 'app_categorie_edit', methods: ['POST'])] // Changed to POST only for modal submission
 public function edit(Request $request, Categorie $categorie, EntityManagerInterface $em, SluggerInterface $slugger): Response
 {
@@ -122,7 +125,7 @@ public function delete(Categorie $categorie, EntityManagerInterface $em, Request
     return $this->redirect($referer ?? $this->generateUrl('app_categorie_index'));
 }
 
- 
+
 
     private function handleIconeUpload(?UploadedFile $file, Categorie $cat, SluggerInterface $slugger): void
     {
