@@ -93,23 +93,37 @@ public function index(Request $request, EntityManagerInterface $em, SessionInter
 
 
 
-    /* ---------- UPDATE ---------- */
-#[Route('/{id}/edit', name: 'app_categorie_edit', methods: ['POST'])] // Changed to POST only for modal submission
-public function edit(Request $request, Categorie $categorie, EntityManagerInterface $em, SluggerInterface $slugger): Response
-{
-    $form = $this->createForm(CategorieType::class, $categorie);
-    $form->handleRequest($request);
+    #[Route('/{id}/edit', name: 'app_categorie_edit', methods: ['POST'])]
+    public function edit(Request $request, Categorie $categorie, EntityManagerInterface $em): Response
+    {
+        $form = $this->createForm(CategorieType::class, $categorie);
+        $form->handleRequest($request);
 
-    if ($form->isSubmitted() && $form->isValid()) {
-        $this->handleIconeUpload($form->get('iconeFile')->getData(), $categorie, $slugger);
-        $em->flush();
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
+            $file = $form->get('iconeFile')->getData();
+
+            if ($file) {
+                $originalName = $file->getClientOriginalName();
+                $targetDir = $this->getParameter('kernel.project_dir') . '/public/assets/media/ch';
+
+                $targetPath = $targetDir . '/' . $originalName;
+                if (file_exists($targetPath)) {
+                    $originalName = pathinfo($originalName, PATHINFO_FILENAME)
+                        . '_' . uniqid() . '.' . $file->guessExtension();
+                }
+
+                $file->move($targetDir, $originalName);
+                $categorie->setIcone('assets/media/ch/' . $originalName);
+            }
+
+            $em->flush();
+
+            return $this->redirectToRoute('app_categorie_index', [], Response::HTTP_SEE_OTHER);
+        }
 
         return $this->redirectToRoute('app_categorie_index', [], Response::HTTP_SEE_OTHER);
     }
-
-    // If form is not valid, redirect back with error (you might want to handle this differently)
-    return $this->redirectToRoute('app_categorie_index', [], Response::HTTP_SEE_OTHER);
-}
 
 
 #[Route('/{id}/delete', name: 'app_categorie_delete', methods: ['GET'])]
