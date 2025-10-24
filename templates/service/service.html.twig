@@ -306,7 +306,7 @@
 													<div class="row g-4">
 														{% for produit in categorie.produits|sort((a, b) => a.position <=> b.position) %}
 															<div class="col-6 col-sm-4 col-md-3 col-lg-2">
-																<div class="card card-flush h-100 p-2">
+																<div class="card card-flush h-100 p-2 transform transition-transform duration-300 hover:scale-105 hover:shadow-lg cursor-pointer">
 																	<div class="card-body text-center p-0">
 																		<div class="position-relative">
 																			<span class="position-absolute top-0 start-0 m-1 z-index-2">
@@ -317,15 +317,15 @@
 																			</span>
 
 																			<a href="{{ path('app_produit_details', {'id': produit.id}) }}">
-																				<img
-																					src="{{ asset(produit.image) }}"
-																					alt="{{ produit.nom }}"
-																					class="rounded-3 w-100 h-120px object-fit-cover mb-3"
+																				<img 
+																					src="{{ asset(produit.image) }}" 
+																					alt="{{ produit.nom }}" 
+																					class="rounded-3 w-100 h-120px object-fit-cover mb-3" 
 																					loading="lazy"
 																					decoding="async"
 																				/>
-
 																			</a>
+
 																			{% if produit.reduction %}
 																				<span class="badge badge-light-danger position-absolute top-0 end-0 m-1">
 																					{{ produit.reduction }}%
@@ -344,18 +344,17 @@
 																				DT {{ produit.prix|number_format(0, ',', '.') }}
 																			</span>
 																			{% if produit.prixAncien %}
-																				<span class="fw-bold fs-6 ms-1 gold-text">
+																				<span class="fw-bold fs-6 ms-1 text-decoration-line-through text-gray-500">
 																					DT {{ produit.prixAncien }}
 																				</span>
 																			{% endif %}
 																		</div>
-
 																	</div>
 																</div>
 															</div>
 														{% else %}
 															<div class="col-12">
-																<p>Aucun produit disponible dans cette catégorie.</p>
+																<p class="text-center text-muted">Aucun produit disponible dans cette catégorie.</p>
 															</div>
 														{% endfor %}
 													</div>
