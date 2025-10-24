@@ -93,37 +93,36 @@ public function index(Request $request, EntityManagerInterface $em, SessionInter
 
 
 
-    #[Route('/{id}/edit', name: 'app_categorie_edit', methods: ['POST'])]
-    public function edit(Request $request, Categorie $categorie, EntityManagerInterface $em): Response
-    {
-        $form = $this->createForm(CategorieType::class, $categorie);
-        $form->handleRequest($request);
+   #[Route('/{id}/edit', name: 'app_categorie_edit', methods: ['POST'])]
+public function edit(Request $request, Categorie $categorie, EntityManagerInterface $em): Response
+{
+    $form = $this->createForm(CategorieType::class, $categorie);
+    $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
-            $file = $form->get('iconeFile')->getData();
+    if ($form->isSubmitted() && $form->isValid()) {
+        /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
+        $file = $form->get('iconeFile')->getData();
 
-            if ($file) {
-                $originalName = $file->getClientOriginalName();
-                $targetDir = $this->getParameter('kernel.project_dir') . '/public/assets/media/ch';
+        if ($file) {
+            // Keep the original file name
+            $originalName = $file->getClientOriginalName();
+            $targetDir = $this->getParameter('kernel.project_dir') . '/public/assets/media/ch';
 
-                $targetPath = $targetDir . '/' . $originalName;
-                if (file_exists($targetPath)) {
-                    $originalName = pathinfo($originalName, PATHINFO_FILENAME)
-                        . '_' . uniqid() . '.' . $file->guessExtension();
-                }
+            // Move the file (this will overwrite if the same name exists)
+            $file->move($targetDir, $originalName);
 
-                $file->move($targetDir, $originalName);
-                $categorie->setIcone('assets/media/ch/' . $originalName);
-            }
-
-            $em->flush();
-
-            return $this->redirectToRoute('app_categorie_index', [], Response::HTTP_SEE_OTHER);
+            // Update entity path
+            $categorie->setIcone('assets/media/ch/' . $originalName);
         }
+
+        $em->flush();
 
         return $this->redirectToRoute('app_categorie_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    return $this->redirectToRoute('app_categorie_index', [], Response::HTTP_SEE_OTHER);
+}
+
 
 
 #[Route('/{id}/delete', name: 'app_categorie_delete', methods: ['GET'])]
@@ -131,26 +130,21 @@ public function delete(Categorie $categorie, EntityManagerInterface $em, Request
 {
     $em->remove($categorie);
     $em->flush();
-
-    // Get the previous page URL
+ 
     $referer = $request->headers->get('referer');
-
-    // Redirect back to the same page
+ 
     return $this->redirect($referer ?? $this->generateUrl('app_categorie_index'));
 }
 
-
-
-    private function handleIconeUpload(?UploadedFile $file, Categorie $cat, SluggerInterface $slugger): void
-    {
-        if (!$file) return;
-
-        $original = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-        $safeName = $slugger->slug($original).'-'.uniqid().'.'.$file->guessExtension();
-
-        $targetDir = $this->getParameter('kernel.project_dir').'/public/assets/media/ch';
-        $file->move($targetDir, $safeName);
-
-        $cat->setIcone('assets/media/ch/'.$safeName);
-    }
+private function handleIconeUpload(?UploadedFile $file, Categorie $categorie): void
+{
+    if (!$file) {
+        return;
+    } 
+    $originalName = $file->getClientOriginalName(); 
+    $targetDir = $this->getParameter('kernel.project_dir') . '/public/assets/media/ch'; 
+    $file->move($targetDir, $originalName);
+ 
+    $categorie->setIcone('assets/media/ch/' . $originalName);
+}
 }
