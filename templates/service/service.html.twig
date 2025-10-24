@@ -25,6 +25,21 @@
     background-clip: text;
 }
 
+#food-slider .nav-link:hover {
+    transform: scale(1.12);
+    transition: transform .25s ease;
+} 
+.card.transform{
+  transition:transform .25s ease,box-shadow .25s ease;
+  transform-origin:center;
+}
+.card.transform:active{
+  transform:scale(1.18);       
+  box-shadow:0 12px 30px rgba(0,0,0,.20);
+  z-index:10;
+  cursor:zoom-in;
+}
+
 </style>
 <script>
     var defaultThemeMode = "light";
