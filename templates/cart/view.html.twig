@@ -1,0 +1,101 @@
+<!-- ✅ Styles & Scripts -->
+<link rel="shortcut icon" href="assets/media/logos/favicon.ico"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700"/>
+<link href="{{ asset('assets/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
+<link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet">
+<link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet">
+
+<script>var hostUrl = "{{ asset('assets/') }}";</script>
+<script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
+<script src="{{ asset('assets/js/scripts.bundle.js') }}"></script>
+<script src="{{ asset('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
+<script src="{{ asset('assets/js/widgets.bundle.js') }}"></script>
+<script src="{{ asset('assets/js/custom/widgets.js') }}"></script>
+<script src="{{ asset('assets/js/custom/apps/chat/chat.js') }}"></script>
+<script src="{{ asset('assets/js/custom/utilities/modals/upgrade-plan.js') }}"></script>
+<script src="{{ asset('assets/js/custom/utilities/modals/create-app.js') }}"></script>
+<script src="{{ asset('assets/js/custom/utilities/modals/users-search.js') }}"></script>
+
+<div class="container py-10">
+  <div class="card shadow-sm">
+    <div class="card-body">
+
+      <div class="d-flex justify-content-between align-items-center mb-8">
+        <a href="{{ path('app_service') }}" class="btn btn-light btn-sm">
+          Continuer mes achats
+        </a>
+      </div>
+
+      {% if items is not empty %}
+        {% for row in items %}
+          <div class="d-flex align-items-sm-center mb-7 border-bottom pb-5"> 
+            <div class="symbol symbol-50px me-5">
+              <span class="symbol-label">
+                <img src="{{ asset(row.produit.image) }}" 
+                     class="h-50 align-self-center" 
+                     alt="{{ row.produit.nom }}">
+              </span>
+            </div>
+            <!--end::Symbol-->
+
+            <!--begin::Section-->
+            <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+              <div class="flex-grow-1 me-2">
+                <a href="#" class="text-gray-800 text-hover-primary fs-6 fw-bold">
+                  {{ row.produit.nom }}
+                </a>
+                <span class="text-muted fw-semibold d-block fs-7">
+                  Prix unitaire : {{ row.produit.prix }} DT
+                </span>
+                <span class="text-muted fw-semibold d-block fs-7">
+                  Sous-total : {{ row.produit.prix * row.quantite }} DT
+                </span>
+              </div>
+
+              <!-- Quantity Update & Remove -->
+              <div class="d-flex align-items-center">
+                <form action="{{ path('cart_update', {id: row.id}) }}" method="post" class="d-flex align-items-center me-3">
+                  <input type="number"
+                         name="quantite"
+                         value="{{ row.quantite }}"
+                         min="1"
+                         class="form-control form-control-sm w-75px me-2"/>
+                  <button type="submit" class="btn btn-light btn-sm">
+                    <i class="ki-filled ki-pencil text-primary fs-5"></i>
+                  </button>
+                </form>
+
+                <form action="{{ path('cart_remove', {id: row.id}) }}" method="post">
+                  <button type="submit" class="btn btn-icon btn-light-danger btn-sm">
+                    <i class="ki-filled ki-trash fs-5"></i>
+                  </button>
+                </form>
+              </div>
+            </div>
+            <!--end::Section-->
+          </div>
+        {% endfor %}
+
+        <!-- Total section -->
+        <div class="d-flex justify-content-between align-items-center bg-light rounded p-5 mt-5">
+          <span class="fw-bold fs-5 text-gray-800">
+            Total : <span class="text-primary">{{ total }} DT</span>
+          </span>
+          <form action="{{ path('checkout') }}" method="get">
+            <button type="submit" class="btn btn-primary btn-sm">
+              Caisse
+            </button>
+          </form>
+        </div>
+
+      {% else %}
+        <div class="text-center py-10">
+          <p class="text-muted mb-4 fs-6">🛍️ Votre panier est vide.</p>
+          <a href="{{ path('checkout') }}" class="btn btn-light">
+            Découvrir nos produits
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>

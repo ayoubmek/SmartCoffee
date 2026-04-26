@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+{% block title %}Mes commandes{% endblock %}
+
+{% block body %}
+<h1>Mes commandes</h1>
+
+{% for c in commandes %}
+    <div style="border:1px solid #ccc;padding:8px;margin:8px 0;">
+        <strong>Commande #{{ c.id }}</strong><br>
+        Date: {{ c.createdAt|date('Y-m-d H:i') }} — Total: {{ c.total }} DT — Statut: {{ c.status }}
+        <div><a href="{{ path('commande_show', {id: c.id}) }}">Voir</a></div>
+    </div>
+{% else %}
+    <p>Vous n'avez pas de commandes.</p>
+{% endfor %}
+{% endblock %}

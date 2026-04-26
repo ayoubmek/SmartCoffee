@@ -18,33 +18,22 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 final class OfferController extends AbstractController
 {
    #[Route( name: 'app_offer_index', methods: ['GET'])]
-public function index(Request $request, EntityManagerInterface $em, SessionInterface $session): Response
-{
-    if (!$session->get('logged_in')) {
-        return $this->redirectToRoute('app_login');
+    public function index(Request $request, EntityManagerInterface $em, SessionInterface $session): Response
+    {
+        if (!$session->get('logged_in')) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $offer = new Offer();
+        $form = $this->createForm(OfferType::class, $offer);
+
+        $offers = $em->getRepository(Offer::class)->findAll();
+
+        return $this->render('offer/index.html.twig', [
+            'offers'    => $offers,
+            'form'      => $form->createView(),
+        ]);
     }
-
-    $offer = new Offer();
-    $form = $this->createForm(OfferType::class, $offer);
-
-    $offers = $em->getRepository(Offer::class)->findAll();
-    $editForms = [];
-    foreach ($offers as $item) {
-        $editForms[$item->getId()] = $this->createForm(OfferType::class, $item)->createView();
-    }
-
-    $response = $this->render('offer/index.html.twig', [
-        'offers'    => $offers,
-        'form'      => $form->createView(),
-        'editForms' => $editForms,
-    ]);
-
-    $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
-    $response->headers->set('Pragma', 'no-cache');
-    $response->headers->set('Expires', '0');
-
-    return $response;
-}
 
 /* ---------- CREATE ---------- */
 #[Route('/offer/new', name: 'app_offer_new', methods: ['GET', 'POST'])]
@@ -76,7 +65,7 @@ public function new(Request $request, EntityManagerInterface $em): Response
         $em->persist($offer);
         $em->flush();
 
-        return $this->redirectToRoute('app_offer_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_offer_index', [], Response::HTTP_SEE_OTHER);
     }
  
 }
@@ -90,36 +79,48 @@ public function new(Request $request, EntityManagerInterface $em): Response
         ]);
     }
 
-   #[Route('/{id}/edit', name: 'app_offer_edit', methods: ['GET', 'POST'])]
-public function edit(Request $request, Offer $offer, EntityManagerInterface $em): Response
-{
-    $form = $this->createForm(OfferType::class, $offer);
-    $form->handleRequest($request);
+    #[Route('/{id}/edit', name: 'app_offer_edit', methods: ['POST'])]
+    public function edit(Request $request, Offer $offer, EntityManagerInterface $em): Response
+    {
+        $form = $this->createForm(OfferType::class, $offer);
+        $form->handleRequest($request);
 
-    if ($form->isSubmitted() && $form->isValid()) {
-        /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
-        $file = $form->get('imageFile')->getData();
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
+            $file = $form->get('imageFile')->getData();
 
-        if ($file) {
-            // Keep the original filename (with extension)
-            $originalFilename = $file->getClientOriginalName();
+            if ($file) {
+                // Keep the original filename (with extension)
+                $originalFilename = $file->getClientOriginalName();
+                $targetDir = $this->getParameter('kernel.project_dir') . '/public/assets/media/ch';
 
-            // Define target directory
-            $targetDir = $this->getParameter('kernel.project_dir') . '/public/assets/media/ch';
-            $targetPath = $targetDir . '/' . $originalFilename;
+                // Move the file (overwrite if it exists)
+                $file->move($targetDir, $originalFilename);
 
-            // Move the file (overwrite if it exists)
-            $file->move($targetDir, $originalFilename);
+                // Save relative path in DB
+                $offer->setImage('assets/media/ch/' . $originalFilename);
+            }
 
-            // Save relative path in DB
-            $offer->setImage('assets/media/ch/' . $originalFilename);
+            $em->flush();
+                return $this->redirectToRoute('app_offer_index', [], Response::HTTP_SEE_OTHER);
         }
+        
+            return $this->redirectToRoute('app_offer_index', [], Response::HTTP_SEE_OTHER);
+    }
 
-        $em->flush();
+    #[Route('/{id}/edit-form', name: 'app_offer_edit_form', methods: ['GET'])]
+    public function editForm(Offer $offer): Response
+    {
+        $form = $this->createForm(OfferType::class, $offer, [
+            'action' => $this->generateUrl('app_offer_edit', ['id' => $offer->getId()]),
+            'method' => 'POST',
+        ]);
 
-        return $this->redirectToRoute('app_offer_index', [], Response::HTTP_SEE_OTHER);
-    } 
-}
+        return $this->render('offer/_form_edit.html.twig', [
+            'offer' => $offer,
+            'form' => $form->createView(),
+        ]);
+    }
 
 
 #[Route('/{id}/delete', name: 'app_offer_delete', methods: ['GET'])]

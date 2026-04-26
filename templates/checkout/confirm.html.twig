@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+{% block title %}Confirmer la commande{% endblock %}
+
+{% block body %}
+<h1>Confirmer la commande</h1>
+
+<ul>
+    {% for row in items %}
+        <li>{{ row.produit.nom }} — {{ row.quantite }} × {{ row.produit.prix }} DT = {{ (row.quantite * row.produit.prix) }} DT</li>
+    {% endfor %}
+</ul>
+
+<h3>Total: {{ total }} DT</h3>
+
+<form method="post" action="{{ path('checkout') }}">
+    <button type="submit">Confirmer et payer (simulé)</button>
+</form>
+
+<a href="{{ path('cart_view') }}">Retour au panier</a>
+{% endblock %}

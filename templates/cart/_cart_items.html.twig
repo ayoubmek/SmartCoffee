@@ -1,0 +1,93 @@
+{% if items is not empty %}
+    <div class="d-flex flex-column gap-3 gap-md-5">
+        {% for row in items %}
+            <div class="d-flex align-items-center bg-white rounded-3 p-2 shadow-sm mb-1 position-relative overflow-hidden group-cart-item swipe-item" 
+                 data-delete-url="{{ path('cart_remove', {id: row.id}) }}"
+                 style="touch-action: pan-x; transition: transform 0.1s linear;">
+                
+                {# Hidden Swipe Background (Trash Icon) #}
+                <div class="swipe-background position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-between px-8" style="z-index: 0; opacity: 0; pointer-events: none; background: #f1f1f1;">
+                    <i class="ki-duotone ki-trash fs-1 text-danger"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+                    <i class="ki-duotone ki-trash fs-1 text-danger"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+                </div>
+
+                {# Item Content Wrapper (This moves) #}
+                <div class="d-flex align-items-center w-100 swipe-content" style="z-index: 1; position: relative; background: white;">
+                    {# Product Image #}
+                    <div class="symbol symbol-60px symbol-md-70px symbol-2by3 flex-shrink-0 me-3 me-md-4">
+                        <img src="{{ asset(row.produit.image) }}" alt="{{ row.produit.nom }}" class="rounded-2 object-fit-cover">
+                    </div>
+
+                    {# Product Details #}
+                    <div class="flex-grow-1 min-w-0 me-2">
+                        <a href="#" class="text-gray-900 text-hover-primary fs-6 fw-bold text-truncate d-block mb-1">
+                            {{ row.produit.nom }}
+                        </a>
+                        <div class="d-flex align-items-baseline mb-2">
+                             <span class="fw-semibold text-gray-800 fs-7">{{ row.produit.prix }} DT</span>
+                        </div>
+                    </div>
+
+                    {# Actions: Quantity & Totals #}
+                    <div class="d-flex flex-column align-items-end ms-auto me-2">
+                        {# Quantity Stepper #}
+                        <form action="{{ path('cart_update', {id: row.id}) }}" method="post" class="d-flex align-items-center border rounded-pill p-1 mb-1 bg-light">
+                            <button type="button" class="btn btn-icon btn-sm h-20px w-20px h-md-25px w-md-25px btn-text-gray-500 btn-active-text-primary" onclick="this.nextElementSibling.stepDown(); this.form.submit()">
+                                <i class="ki-duotone ki-minus fs-6 fs-md-5"></i>
+                            </button>
+                            <input type="number" name="quantite" value="{{ row.quantite }}" min="1" readonly
+                                   class="form-control form-control-transparent form-control-sm w-25px w-md-30px text-center p-0 fw-bold fs-7 text-gray-800 border-0" 
+                                   onchange="this.form.submit()"/>
+                            <button type="button" class="btn btn-icon btn-sm h-20px w-20px h-md-25px w-md-25px btn-text-gray-500 btn-active-text-primary" onclick="this.previousElementSibling.stepUp(); this.form.submit()">
+                                <i class="ki-duotone ki-plus fs-6 fs-md-5"></i>
+                            </button>
+                        </form>
+
+                        {# Subtotal #}
+                        <span class="text-primary fw-bold fs-7 fs-md-6">
+                            {{ (row.produit.prix * row.quantite)|number_format(0, '.', ',') }} DT
+                        </span>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {# Footer / Total #}
+    <div class="d-flex flex-column bg-gray-100 rounded-3 p-5 mt-5 border border-dashed border-gray-300">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <span class="text-gray-600 fw-semibold fs-6">Sous-total</span>
+            <span class="text-gray-900 fw-bold fs-5">{{ total|number_format(0, '.', ',') }} DT</span>
+        </div>
+        <div class="separator separator-dashed border-gray-300 mb-4"></div>
+        <div class="d-flex justify-content-between align-items-center mb-6">
+            <span class="text-gray-800 fw-bold fs-4">Total</span>
+            <span class="text-primary fw-bolder fs-3">{{ total|number_format(0, '.', ',') }} DT</span>
+        </div>
+        
+        <div class="d-grid gap-3">
+            <form action="{{ path('checkout') }}" method="get" class="w-100">
+                <button type="submit" class="btn btn-primary w-100 py-3 fs-6 fw-bold btn-animate-scale">
+                    <span class="indicator-label">Passer à la caisse <i class="ki-duotone ki-arrow-right fs-4 ms-2"></i></span>
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+{% else %}
+    <div class="d-flex flex-column flex-center text-center py-15">
+        <div class="symbol symbol-100px symbol-circle bg-light-danger mb-5 animation-float">
+            <i class="ki-duotone ki-basket fs-5x text-danger opacity-50">
+                <span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span>
+            </i>
+        </div>
+        <h3 class="fw-bold text-gray-900 fs-4 mb-2">Votre panier est vide</h3>
+        <p class="text-gray-500 fw-semibold fs-7 mb-7">Ajoutez de délicieux produits pour commencer !</p>
+        <button type="button" class="btn btn-primary btn-sm px-6" data-kt-drawer-dismiss="true">
+            Continuer mes achats
+        </button>
+    </div>
+{% endif %}
+
+

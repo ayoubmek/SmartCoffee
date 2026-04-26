@@ -1,0 +1,14 @@
+<?php
+namespace App\Repository;
+
+use App\Entity\CommandeItem;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+class CommandeItemRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $r)
+    {
+        parent::__construct($r, CommandeItem::class);
+    }
+}

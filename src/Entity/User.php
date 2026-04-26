@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Entity;
-
-use App\Entity\Payment;
+namespace App\Entity; 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: "App\Repository\UserRepository")]
+#[ORM\Table(name: 'user')]
 class User
 {
     #[ORM\Id]
@@ -39,26 +38,29 @@ class User
     #[ORM\Column(type: 'datetime_immutable')]
     private $updatedAt;
 
-    /* ---------------- existing relations ---------------- */
-
-    #[ORM\OneToMany(mappedBy: 'barber', targetEntity: InvoiceItem::class)]
-    private $invoiceItems;
+ 
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: History::class)]
     private $histories;
 
-    /* ---------------- NEW relation ---------------- */
+    #[ORM\Column(length: 10)]
+    private ?string $gender = null;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Payment::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'barber', targetEntity: InvoiceItem::class)]
+    private Collection $invoiceItems;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Payment::class)]
     private Collection $payments;
 
+  
+
     public function __construct()
-    {
-        $this->invoiceItems = new ArrayCollection();
-        $this->histories    = new ArrayCollection();
-        $this->payments     = new ArrayCollection();   // <— add this
+    { 
+        $this->histories    = new ArrayCollection(); 
         $this->createdAt    = new \DateTimeImmutable();
         $this->updatedAt    = new \DateTimeImmutable();
+        $this->invoiceItems = new ArrayCollection();
+        $this->payments     = new ArrayCollection();
     }
 
     /* =========================================================
@@ -146,42 +148,21 @@ class User
         return $this->updatedAt;
     }
 
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
+
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
         return $this;
     }
+ 
 
-    /* =========================================================
-       INVOICEITEMS RELATION
-    ========================================================= */
-
-    /**
-     * @return Collection|InvoiceItem[]
-     */
-    public function getInvoiceItems(): Collection
-    {
-        return $this->invoiceItems;
-    }
-
-    public function addInvoiceItem(InvoiceItem $invoiceItem): self
-    {
-        if (!$this->invoiceItems->contains($invoiceItem)) {
-            $this->invoiceItems[] = $invoiceItem;
-            $invoiceItem->setBarber($this);
-        }
-        return $this;
-    }
-
-    public function removeInvoiceItem(InvoiceItem $invoiceItem): self
-    {
-        if ($this->invoiceItems->removeElement($invoiceItem)) {
-            if ($invoiceItem->getBarber() === $this) {
-                $invoiceItem->setBarber(null);
-            }
-        }
-        return $this;
-    }
+   
+ 
 
     /* =========================================================
        HISTORIES RELATION
@@ -214,9 +195,44 @@ class User
         return $this;
     }
 
-    /* =========================================================
-       PAYMENTS RELATION   (newly added)
-    ========================================================= */
+    public function getGender(): ?string
+    {
+        return $this->gender;
+    }
+
+    public function setGender(string $gender): static
+    {
+        $this->gender = $gender;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|InvoiceItem[]
+     */
+    public function getInvoiceItems(): Collection
+    {
+        return $this->invoiceItems;
+    }
+
+    public function addInvoiceItem(InvoiceItem $invoiceItem): self
+    {
+        if (!$this->invoiceItems->contains($invoiceItem)) {
+            $this->invoiceItems[] = $invoiceItem;
+            $invoiceItem->setBarber($this);
+        }
+        return $this;
+    }
+
+    public function removeInvoiceItem(InvoiceItem $invoiceItem): self
+    {
+        if ($this->invoiceItems->removeElement($invoiceItem)) {
+            if ($invoiceItem->getBarber() === $this) {
+                $invoiceItem->setBarber(null);
+            }
+        }
+        return $this;
+    }
 
     /**
      * @return Collection|Payment[]
@@ -238,11 +254,11 @@ class User
     public function removePayment(Payment $payment): self
     {
         if ($this->payments->removeElement($payment)) {
-            // set the owning side to null (unless already changed)
             if ($payment->getUser() === $this) {
                 $payment->setUser(null);
             }
         }
         return $this;
     }
+
 }

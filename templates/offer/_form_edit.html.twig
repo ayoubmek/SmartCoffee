@@ -1,0 +1,85 @@
+<div class="modal-header" id="kt_modal_edit_offer_header_{{ offer.id }}">
+    <h2 class="fw-bold">Edit Product Carousel</h2>
+    <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
+        <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+    </div>
+</div>
+
+{{ form_start(form, {
+    'attr': {
+        'id': 'kt_modal_edit_offer_form_' ~ offer.id,
+        'class': 'form',
+        'enctype': 'multipart/form-data'
+    }
+}) }}
+
+<div class="modal-body px-5 my-7">
+    <div class="d-flex flex-column scroll-y px-5 px-lg-10"
+            data-kt-scroll="true"
+            data-kt-scroll-max-height="auto"
+            data-kt-scroll-offset="300px">
+
+        <div class="fv-row mb-7">
+            <label class="required fw-semibold fs-6 mb-2">Name</label>
+            {{ form_widget(form.name, {'attr': {'class': 'form-control form-control-solid'}}) }}
+            {{ form_errors(form.name) }}
+        </div>
+
+        <div class="fv-row mb-7">
+            <label class="d-block fw-semibold fs-6 mb-5">Offer Image</label>
+
+            <div class="image-input image-input-outline {% if offer.image %}image-input-filled{% else %}image-input-placeholder{% endif %}"
+                    data-kt-image-input="true" id="image-input-edit-{{ offer.id }}">
+                <div class="image-input-wrapper w-160px h-90px"
+                        {% if offer.image %}
+                            style="background-image: url('{{ asset(offer.image) }}')"
+                        {% endif %}>
+                </div>
+
+                <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                        data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Change image">
+                    <i class="ki-duotone ki-pencil fs-7">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                    </i>
+                    {{ form_widget(form.imageFile, {
+                        'label': false,
+                        'attr': {
+                            'class': 'd-none',
+                            'accept': '.png,.jpg,.jpeg,.webp'
+                        }
+                    }) }}
+                </label>
+
+                <input type="hidden" name="image_remove" value="0">
+                
+                <!-- Cancel button -->
+                <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" 
+                      data-kt-image-input-action="cancel" data-bs-toggle="tooltip" title="Cancel image">
+                    <i class="ki-duotone ki-cross fs-2"></i>
+                </span>
+
+                <!-- Remove button -->
+                <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" 
+                      data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Remove image">
+                    <i class="ki-duotone ki-cross fs-2"></i>
+                </span>
+            </div>
+
+            <div class="form-text">1408*768 Allowed file types: png, jpg, jpeg.</div>
+            {{ form_errors(form.imageFile) }}
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer text-center">
+    <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal">Discard</button>
+    <button type="submit" class="btn btn-primary">
+        <span class="indicator-label">Update</span>
+        <span class="indicator-progress" style="display:none;">
+            Please wait...
+            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+        </span>
+    </button>
+</div>
+{{ form_end(form) }}

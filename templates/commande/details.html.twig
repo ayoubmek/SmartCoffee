@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <base href="/">
+    <meta charset="utf-8" />
+    <title>Détails de la commande #{{ commande.id }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
+    <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
+    <style>
+        body { background-color: #f5f8fa; font-family: 'Inter', sans-serif; }
+        .invoice-card {
+            border: none;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+            border-radius: 16px;
+            border-top: 5px solid #caa44c;
+        }
+        .status-badge-pending {
+            background-color: #fff8dd;
+            color: #f6c000;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .status-badge-completed {
+            background-color: #e8fff3;
+            color: #50cd89;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .step-icon {
+            width: 44px; height: 44px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .step-active .step-icon {
+            background: linear-gradient(135deg, #caa44c 0%, #e0c47e 100%);
+            color: white;
+            box-shadow: 0 8px 16px rgba(202, 164, 76, 0.25);
+        }
+        .step-active .step-icon i { color: #ffffff !important; }
+        .step-inactive .step-icon {
+            background-color: #f3f6f9;
+            color: #a1a5b7;
+        }
+        .gold-text { color: #caa44c; }
+        .table thead th {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #b5b5c3;
+            font-weight: 600;
+        }
+        .symbol-img {
+            border-radius: 8px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body id="kt_body" class="header-fixed header-tablet-and-mobile-fixed toolbar-enabled">
+    <div class="d-flex flex-column flex-root">
+        <div class="page d-flex flex-row flex-column-fluid">
+            <div class="wrapper d-flex flex-column flex-row-fluid pt-10">
+                <div class="content flex-column-fluid">
+                    <div class="container-xxl">
+                        
+
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <div class="card invoice-card bg-white p-4 mb-5">
+                                    
+                                    <!-- Header -->
+                                    <div class="d-flex justify-content-between align-items-center mb-8 pb-4 border-bottom border-gray-100">
+                                        <div class="d-flex flex-column">
+                                            <div class="text-gray-400 fs-7 fw-semibold">Détails de votre commande</div>
+                                        </div>
+                                        <div class="symbol symbol-45px">
+                                             <img src="{{ asset('assets/media/ch/logoB.webp') }}" alt="Logo" class="opacity-50" /> 
+                                        </div>
+                                    </div>
+
+                                    <!-- Progress Tracker (Visual) -->
+                                    <div class="d-flex justify-content-between align-items-center mb-10 px-2 position-relative">
+                                        <!-- Line -->
+                                        <div class="position-absolute top-50 start-0 w-100 h-4px bg-light rounded z-index-1" style="transform: translateY(-50%);"></div>
+                                        
+                                        <!-- Step 1 -->
+                                        <div id="tracker-step-1" class="position-relative z-index-2 text-center step-active">
+                                            <div class="step-icon mx-auto mb-3 bg-white"><i class="ki-duotone ki-verify fs-2"><span class="path1"></span><span class="path2"></span></i></div>
+                                            <div class="fw-bold fs-7 text-gray-800">Validée</div>
+                                        </div>
+                                        
+                                        <!-- Step 2 -->
+                                        <div id="tracker-step-2" class="position-relative z-index-2 text-center {% if commande.status == 'Approuvé' or commande.status == 'Conforme' or commande.status == 'Conforme' %}step-active{% else %}step-inactive{% endif %}">
+                                            <div class="step-icon mx-auto mb-3 bg-white">
+                                                <i class="ki-duotone ki-timer fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                                            </div>
+                                            <div class="fw-bold fs-7 text-gray-800">En cours</div>
+                                        </div>
+
+                                        <!-- Step 3 -->
+                                        <div id="tracker-step-3" class="position-relative z-index-2 text-center {% if commande.status == 'Conforme' %}step-active{% else %}step-inactive{% endif %}">
+                                            <div class="step-icon mx-auto mb-3 bg-white"><i class="ki-duotone ki-check fs-2"><span class="path1"></span><span class="path2"></span></i></div>
+                                            <div class="fw-bold fs-7 text-gray-500">Prête</div>
+                                        </div>
+                                    </div>
+                                    
+
+                                    <!-- Items List -->
+                                    <div class="table-responsive mb-5">
+                                        <table class="table align-middle gs-0 gy-4">
+                                            <thead>
+                                                <tr class="border-bottom border-gray-100">
+                                                    <th class="ps-0 min-w-150px">PRODUIT</th>
+                                                    <th class="min-w-80px text-end">PRIX</th>
+                                                    <th class="min-w-50px text-center">QTÉ</th>
+                                                    <th class="pe-0 min-w-80px text-end">TOTAL</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for item in commande.items %}
+                                                    <tr class="border-bottom border-dashed border-gray-100">
+                                                        <td class="ps-0">
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="symbol symbol-45px me-3">
+                                                                    <img src="{{ asset(item.produit.image) }}" class="symbol-img" alt="" />
+                                                                </div>
+                                                                <div class="d-flex flex-column">
+                                                                    <a href="#" class="text-gray-800 fw-bold text-hover-primary fs-6 mb-1">{{ item.produit.nom }}</a>
+                                                                    <span class="text-gray-400 fw-semibold fs-8">{{ item.produit.categorie.nom }}</span>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-end fw-bold text-gray-700 fs-7">{{ item.prix|number_format(2, ',', ' ') }}</td>
+                                                        <td class="text-center fw-bold text-gray-700 fs-7">{{ item.quantite }}</td>
+                                                        <td class="text-end pe-0 fw-bolder text-gray-900 fs-6">{{ (item.prix * item.quantite)|number_format(2, ',', ' ') }} <span class="fs-8 text-gray-400 fw-normal">DT</span></td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <!-- Total -->
+                                    <div class="d-flex justify-content-end pt-2">
+                                        <div class="d-flex flex-column text-end">
+                                            <span class="fs-6 fw-semibold text-gray-500 mb-1">Total à payer</span>
+                                            <span class="fs-2x fw-bold gold-text lh-1">{{ commande.total|number_format(2, ',', ' ') }} <span class="fs-4 text-gray-400">DT</span></span>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
+    <script src="{{ asset('assets/js/scripts.bundle.js') }}"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const orderId = {{ commande.id }};
+
+        function checkStatus() {
+            fetch(`/commande/${orderId}/status`)
+            .then(res => res.json())
+            .then(data => {
+                const status = data.status;
+                const step2 = document.getElementById('tracker-step-2');
+                const step3 = document.getElementById('tracker-step-3');
+
+                // Helper to set active
+                const setActive = (el) => {
+                    el.classList.remove('step-inactive');
+                    el.classList.add('step-active');
+                };
+                
+                // Helper to set inactive
+                const setInactive = (el) => {
+                     el.classList.remove('step-active');
+                     el.classList.add('step-inactive');
+                }
+
+                if (status === 'En attente' || status === 'pending') {
+                     if(step2) setInactive(step2);
+                     if(step3) setInactive(step3);
+                }
+                else if (status === 'Approuvé') {
+                    if(step2) setActive(step2);
+                    if(step3) setInactive(step3);
+                }
+                else if (status === 'Conforme' || status === 'Complet' || status === 'Terminé') {
+                    if(step2) setActive(step2);
+                    if(step3) setActive(step3);
+                }
+            })
+            .catch(e => console.error(e));
+        }
+
+        // Poll every 3 seconds
+        setInterval(checkStatus, 3000);
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+/* Gold Theme Override - Replace Primary Blue with Gold */
+
+:root {
+    /* Gold color palette */
+    --bs-primary: #c79b33;
+    --bs-primary-rgb: 199, 155, 51;
+    --bs-primary-text-emphasis: #8c6e2f;
+    --bs-primary-bg-subtle: #f5ebd6;
+    --bs-primary-border-subtle: #e3d4b3;
+    
+    /* Gold gradients */
+    --gold-gradient: linear-gradient(135deg, #e3c77a, #caa44c, #8c6e2f, #caa44c);
+    --gold-gradient-text: linear-gradient(135deg, #c79b33ff, #ffbc21ff);
+}
+
+/* Override btn-primary */
+.btn-primary {
+    background: var(--gold-gradient) !important;
+    border-color: #c79b33 !important;
+    color: #fff !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    background: linear-gradient(135deg, #caa44c, #8c6e2f, #caa44c, #e3c77a) !important;
+    border-color: #8c6e2f !important;
+    box-shadow: 0 0 10px rgba(202, 164, 76, 0.5) !important;
+}
+
+/* Override text-primary */
+.text-primary {
+    background: var(--gold-gradient-text) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+}
+
+/* Override bg-primary */
+.bg-primary {
+    background: var(--gold-gradient) !important;
+}
+
+/* Override btn-active-light-primary */
+.btn-active-light-primary:hover,
+.btn-active-light-primary.active,
+.btn-active-light-primary:active {
+    background-color: rgba(199, 155, 51, 0.1) !important;
+    color: #c79b33 !important;
+}
+
+/* Override badge-light-primary */
+.badge-light-primary {
+    background-color: rgba(199, 155, 51, 0.1) !important;
+    color: #c79b33 !important;
+}
+
+/* Override links */
+.text-hover-primary:hover {
+    background: var(--gold-gradient-text) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+}
+
+/* Override active states */
+.btn-active-color-primary:hover,
+.btn-active-color-primary:focus,
+.btn-active-color-primary:active,
+.btn-active-color-primary.active {
+    color: #c79b33 !important;
+}
+
+/* Override border-primary */
+.border-primary {
+    border-color: #c79b33 !important;
+}
+
+/* Override pulse-ring (notification indicator) */
+.pulse-ring {
+    background-color: rgba(199, 155, 51, 0.3) !important;
+}
+
+/* App engage button (cart floating button) */
+.app-engage-btn {
+    background: var(--gold-gradient) !important;
+    box-shadow: 0 4px 15px rgba(202, 164, 76, 0.4) !important;
+}
+
+.app-engage-btn:hover {
+    background: linear-gradient(135deg, #caa44c, #8c6e2f, #caa44c, #e3c77a) !important;
+    box-shadow: 0 6px 20px rgba(202, 164, 76, 0.6) !important;
+    transform: scale(1.05);
+}
+
+.app-engage-btn i {
+    color: #ffffff !important;
+}
+
+/* Active navigation items */
+.nav-link.active {
+    background-color: rgba(199, 155, 51, 0.1) !important;
+}
+
+/* Forms and inputs focus */
+.form-control:focus,
+.form-select:focus {
+    border-color: #c79b33 !important;
+    box-shadow: 0 0 0 0.25rem rgba(199, 155, 51, 0.25) !important;
+}
+
+/* Gold spinner/loader */
+.spinner-border-primary {
+    color: #c79b33 !important;
+}

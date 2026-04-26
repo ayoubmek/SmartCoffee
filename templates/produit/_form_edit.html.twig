@@ -1,0 +1,87 @@
+<div class="modal-header" id="kt_modal_edit_produit_header_{{ produit.id }}">
+    <h2 class="fw-bold">Edit Product</h2>
+    <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
+        <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+    </div>
+</div>
+
+{{ form_start(form, { 'attr': { 'id': 'kt_modal_edit_produit_form_' ~ produit.id, 'class': 'form', 'enctype': 'multipart/form-data' } }) }}
+<div class="modal-body px-5 my-7">
+    <div class="d-flex flex-column scroll-y px-5 px-lg-10" data-kt-scroll="true" data-kt-scroll-max-height="auto" data-kt-scroll-offset="300px">
+        <div class="fv-row mb-7">
+            <label class="required fw-semibold fs-6 mb-2">Name</label>
+            {{ form_widget(form.nom, {'attr': {'class': 'form-control form-control-solid'}}) }}
+            {{ form_errors(form.nom) }}
+        </div>
+        <div class="fv-row mb-7">
+            <label class="fw-semibold fs-6 mb-2">Description</label>
+            {{ form_widget(form.description, {'attr': {'class': 'form-control form-control-solid', 'rows': 3}}) }}
+            {{ form_errors(form.description) }}
+        </div>
+        
+        <div class="fv-row mb-7">
+            <label class="d-block fw-semibold fs-6 mb-5">Image</label>
+
+            <div class="image-input image-input-outline {% if not produit.image %}image-input-placeholder{% endif %}" data-kt-image-input="true" id="image-input-edit-{{ produit.id }}">
+                <div class="image-input-wrapper w-125px h-125px" {% if produit.image %}style="background-image: url('{{ asset(produit.image) }}')" {% endif %}></div>
+
+                <!-- Change button -->
+                <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" 
+                       data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Change image">
+                    <i class="ki-duotone ki-pencil fs-7"><span class="path1"></span><span class="path2"></span></i>
+                </label>
+
+                <!-- File input outside the label -->
+                {{ form_widget(form.imageFile, {
+                    'label': false, 
+                    'attr': {'class': 'd-none', 'accept': '.png,.jpg,.jpeg,.webp'}
+                }) }}
+
+                <input type="hidden" name="image_remove" value="0">
+
+                <!-- Cancel and Remove buttons -->
+                <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" 
+                      data-kt-image-input-action="cancel" data-bs-toggle="tooltip" title="Cancel image">
+                    <i class="ki-duotone ki-cross fs-2"></i>
+                </span>
+
+                <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" 
+                      data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Remove image">
+                    <i class="ki-duotone ki-cross fs-2"></i>
+                </span>
+            </div>
+
+            <div class="form-text">Allowed file types: png, jpg, jpeg ,webp.</div>
+            {{ form_errors(form.imageFile) }}
+        </div>
+
+        <div class="fv-row mb-7">
+            <label class="fw-semibold fs-6 mb-2">Price</label>
+            {{ form_widget(form.prix, {'attr': {'class': 'form-control form-control-solid'}}) }}
+            {{ form_errors(form.prix) }}
+        </div>
+        <div class="fv-row mb-7">
+            <label class="fw-semibold fs-6 mb-2">Old Price</label>
+            {{ form_widget(form.prixAncien, {'attr': {'class': 'form-control form-control-solid'}}) }}
+            {{ form_errors(form.prixAncien) }}
+        </div>
+        <div class="fv-row mb-7">
+            <label class="fw-semibold fs-6 mb-2">Reduction (%)</label>
+            {{ form_widget(form.reduction, {'attr': {'class': 'form-control form-control-solid'}}) }}
+            {{ form_errors(form.reduction) }}
+        </div>
+        <div class="fv-row mb-7">
+            <label class="fw-semibold fs-6 mb-2">Category</label>
+            {{ form_widget(form.categorie, {'attr': {'class': 'form-select form-select-solid'}}) }}
+            {{ form_errors(form.categorie) }}
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer text-center">
+     <button type="submit" class="btn btn-primary">
+        <span class="indicator-label">Update</span>
+        <span class="indicator-progress" style="display:none;">Please wait...<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+    </button>
+</div>
+{{ form_end(form) }}

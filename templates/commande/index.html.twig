@@ -1,0 +1,115 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Order Management{% endblock %}
+
+{% block page_css %}
+<style>
+    [data-bs-theme=light] body:not(.app-blank) {
+        background-image: url("{{ asset('assets/media/patterns/header-bg1.jpg') }}") !important;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    <body id="kt_body" class="header-fixed header-tablet-and-mobile-fixed toolbar-enabled">
+        <div class="d-flex flex-column flex-root">
+            <div class="page d-flex flex-row flex-column-fluid">
+                <div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
+                    <div id="kt_content_container" class="d-flex flex-column-fluid align-items-start container-xl">
+                        <div class="content flex-row-fluid" id="kt_content">
+                            <div class="card card-xl-stretch mb-5 mb-xl-8">
+                                <div class="card-header border-0 pt-5">
+                                    <h3 class="card-title align-items-start flex-column">
+                                        <span class="card-label fw-bold fs-3 mb-1">Order list</span>
+                                        <span class="text-muted mt-1 fw-semibold fs-7">All orders</span>
+                                    </h3>
+                                </div>
+                                <div class="card-body py-3">
+                                    <div class="table-responsive">
+                                        <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
+                                            <thead>
+                                                <tr class="fw-bold text-muted">
+                                                    <th class="min-w-150px">User</th>
+                                                    <th class="min-w-150px">Date</th>
+                                                    <th class="min-w-100px">Status</th>
+                                                    <th class="min-w-100px">Total</th>
+                                                    <th class="min-w-100px text-end">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% include 'commande/_table_rows.html.twig' %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Auto-refresh function
+        function fetchOrders() {
+            fetch('{{ path("app_commande_list_rows") }}')
+            .then(res => res.text())
+            .then(html => {
+                document.querySelector('tbody').innerHTML = html;
+            })
+            .catch(err => console.error('Error fetching orders:', err));
+        }
+
+        // Poll every 5 seconds
+        setInterval(fetchOrders, 5000);
+
+        // Event Delegation for Buttons
+        document.querySelector('tbody').addEventListener('click', function(e) {
+            const btn = e.target.closest('.btn-status-action');
+            if (btn) {
+                const id = btn.dataset.id;
+                const action = btn.dataset.action;
+                const originalText = btn.innerHTML;
+                
+                // Loading state
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+                btn.disabled = true;
+
+                fetch(`/commande/${id}/update-status`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ action: action })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.success) {
+                         // Optimistic Update
+                        const badge = document.getElementById(`status-badge-${id}`);
+                        if(badge) {
+                            badge.innerText = data.status;
+                            badge.className = 'badge';
+                            if(data.status === 'En attente') badge.classList.add('badge-light-warning');
+                            else if(data.status === 'Conforme') badge.classList.add('badge-light-success');
+                            else badge.classList.add('badge-light-primary');
+                        }
+
+                        // Immediate Refresh to get correct button state from server if complex logic
+                        fetchOrders();
+                    } else {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        alert('Error updating status');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                });
+            }
+        });
+    });
+    </script>
+{% endblock %}

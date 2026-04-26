@@ -1,0 +1,29 @@
+{% for commande in commandes %}
+    <tr>
+        <td>{{ commande.user.name }}</td>
+        <td>{{ commande.createdAt|date('Y-m-d H:i') }}</td>
+        <td>
+            <span id="status-badge-{{ commande.id }}" class="badge {% if commande.status == 'En attente' or commande.status == 'pending' %}badge-light-warning{% elseif commande.status == 'Complet' or commande.status == 'completed' or commande.status == 'Conforme' %}badge-light-success{% else %}badge-light-primary{% endif %}">
+                {{ commande.status }}
+            </span>
+        </td>
+        <td class="fw-bold">{{ commande.total }} TND</td>
+        <td class="text-end">
+            <div class="d-flex justify-content-end align-items-center">
+                {% if commande.status == 'En attente' or commande.status == 'pending' %}
+                    <button class="btn btn-sm btn-light-success btn-status-action me-2" data-id="{{ commande.id }}" data-action="approve">Approve</button>
+                {% elseif commande.status == 'Approuvé' %}
+                    <button class="btn btn-sm btn-light-primary btn-status-action me-2" data-id="{{ commande.id }}" data-action="conform">Conform</button>
+                {% elseif commande.status == 'Conforme' or commande.status == 'Complet' %}
+                    <span class="text-success me-2"><i class="ki-duotone ki-check fs-2 text-success"><span class="path1"></span><span class="path2"></span></i></span>
+                {% endif %}
+
+                <a href="{{ path('commande_details', {id: commande.id}) }}" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                    <i class="ki-duotone ki-eye fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                </a>
+            </div>
+        </td>
+    </tr>
+{% else %}
+    <tr><td colspan="5" class="text-center text-muted">No orders found</td></tr>
+{% endfor %}

@@ -18,38 +18,26 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 #[Route('/categorie')]
 final class CategorieController extends AbstractController
 {
-#[Route( name: 'app_categorie_index', methods: ['GET'])]
-public function index(Request $request, EntityManagerInterface $em, SessionInterface $session): Response
-{
-    // 1️⃣ Protect page: check login
-    if (!$session->get('logged_in')) {
-        return $this->redirectToRoute('app_login');
+    #[Route(name: 'app_categorie_index', methods: ['GET'])]
+    public function index(Request $request, EntityManagerInterface $em, SessionInterface $session): Response
+    {
+        // 1️⃣ Protect page: check login
+        if (!$session->get('logged_in')) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        // 2️⃣ Your existing logic
+        $categorie = new Categorie();
+        $form = $this->createForm(CategorieType::class, $categorie);
+
+        $categories = $em->getRepository(Categorie::class)->findAll();
+
+        // 3️⃣ Render template
+        return $this->render('categorie/index.html.twig', [
+            'categories' => $categories,
+            'form'       => $form->createView(),
+        ]);
     }
-
-    // 2️⃣ Your existing logic
-    $categorie = new Categorie();
-    $form = $this->createForm(CategorieType::class, $categorie);
-
-    $categories = $em->getRepository(Categorie::class)->findAll();
-    $editForms = [];
-    foreach ($categories as $category) {
-        $editForms[$category->getId()] = $this->createForm(CategorieType::class, $category)->createView();
-    }
-
-    // 3️⃣ Render template
-    $response = $this->render('categorie/index.html.twig', [
-        'categories' => $categories,
-        'form'       => $form->createView(),
-        'editForms'  => $editForms,
-    ]);
-
-    // 4️⃣ Prevent browser caching (Back button issue)
-    $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
-    $response->headers->set('Pragma', 'no-cache');
-    $response->headers->set('Expires', '0');
-
-    return $response;
-}
 
 
 
@@ -93,35 +81,49 @@ public function index(Request $request, EntityManagerInterface $em, SessionInter
 
 
 
-   #[Route('/{id}/edit', name: 'app_categorie_edit', methods: ['POST'])]
-public function edit(Request $request, Categorie $categorie, EntityManagerInterface $em): Response
-{
-    $form = $this->createForm(CategorieType::class, $categorie);
-    $form->handleRequest($request);
+    #[Route('/{id}/edit', name: 'app_categorie_edit', methods: ['POST'])]
+    public function edit(Request $request, Categorie $categorie, EntityManagerInterface $em): Response
+    {
+        $form = $this->createForm(CategorieType::class, $categorie);
+        $form->handleRequest($request);
 
-    if ($form->isSubmitted() && $form->isValid()) {
-        /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
-        $file = $form->get('iconeFile')->getData();
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
+            $file = $form->get('iconeFile')->getData();
 
-        if ($file) {
-            // Keep the original file name
-            $originalName = $file->getClientOriginalName();
-            $targetDir = $this->getParameter('kernel.project_dir') . '/public/assets/media/ch';
+            if ($file) {
+                // Keep the original file name
+                $originalName = $file->getClientOriginalName();
+                $targetDir = $this->getParameter('kernel.project_dir') . '/public/assets/media/ch';
 
-            // Move the file (this will overwrite if the same name exists)
-            $file->move($targetDir, $originalName);
+                // Move the file (this will overwrite if the same name exists)
+                $file->move($targetDir, $originalName);
 
-            // Update entity path
-            $categorie->setIcone('assets/media/ch/' . $originalName);
+                // Update entity path
+                $categorie->setIcone('assets/media/ch/' . $originalName);
+            }
+
+            $em->flush();
+
+            return $this->redirectToRoute('app_categorie_index', [], Response::HTTP_SEE_OTHER);
         }
-
-        $em->flush();
 
         return $this->redirectToRoute('app_categorie_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    return $this->redirectToRoute('app_categorie_index', [], Response::HTTP_SEE_OTHER);
-}
+    #[Route('/{id}/edit-form', name: 'app_categorie_edit_form', methods: ['GET'])]
+    public function editForm(Categorie $categorie): Response
+    {
+        $form = $this->createForm(CategorieType::class, $categorie, [
+            'action' => $this->generateUrl('app_categorie_edit', ['id' => $categorie->getId()]),
+            'method' => 'POST',
+        ]);
+
+        return $this->render('categorie/_form_edit.html.twig', [
+            'categorie' => $categorie,
+            'form' => $form->createView(),
+        ]);
+    }
 
 
 

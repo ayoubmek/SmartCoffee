@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <title>Bienvenue - Bon Temps Cafe</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
+    <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
+    <style>
+        body {
+            background-color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        .register-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+        .logo {
+            width: 150px;
+            margin-bottom: 2rem;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+        .gender-select {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .gender-option {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .gender-option input {
+            display: none;
+        }
+        .gender-card {
+            width: 140px;
+            height: 140px;
+            border-radius: 20px;
+            border: 2px solid #f1f1f2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #fff;
+            color: #7e8299;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .gender-card i, .gender-card svg, .gender-card img {
+            width: 5.5rem; /* Increased size for 3D icons */
+            height: 5.5rem;
+            margin-bottom: 0.5rem;
+            object-fit: contain;
+        }
+        .gender-option input:checked + .gender-card {
+            border-color: #e3c77a; /* Gold/Primary color */
+            background-color: #fff9e6;
+            color: #d4a318;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(227, 199, 122, 0.2);
+        }
+        .form-control-solid {
+            background-color: #f5f8fa;
+            border-color: #f5f8fa;
+            color: #5e6278;
+            transition: color 0.2s ease, background-color 0.2s ease;
+        }
+        .form-control-solid:focus {
+            background-color: #eef3f7;
+            border-color: #eef3f7;
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, #e3c77a, #caa44c);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(202, 164, 76, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(202, 164, 76, 0.4);
+            color: white;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="register-container">
+        <!-- Logo -->
+        <img src="{{ asset('assets/media/ch/logoB.webp') }}" alt="Logo" class="logo">
+        
+        <h2 class="fw-bolder text-dark mb-1">Bienvenue !</h2>
+        <p class="text-gray-500 fw-semibold fs-6 mb-10">Dites-nous en un peu plus sur vous</p>
+
+        <form method="post" action="{{ path('app_register') }}">
+            
+            <!-- Gender Selection -->
+            <div class="gender-select">
+                <label class="gender-option">
+                    <input type="radio" name="gender" value="homme" required>
+                    <div class="gender-card">
+                        <!-- Male Icon -->
+                        <img src="{{ asset('assets/media/icons/gender_male.png') }}" alt="Homme">
+                        <span class="fw-bold fs-7">Homme</span>
+                    </div>
+                </label>
+                
+                <label class="gender-option">
+                    <input type="radio" name="gender" value="femme" required>
+                    <div class="gender-card">
+                        <!-- Female Icon -->
+                        <img src="{{ asset('assets/media/icons/gender_female.png') }}" alt="Femme">
+                        <span class="fw-bold fs-7">Femme</span>
+                    </div>
+                </label>
+            </div>
+
+            <!-- Name Input -->
+            <div class="fv-row mb-8">
+                <input type="text" placeholder="Votre Prénom" name="name" autocomplete="off" class="form-control form-control-solid rounded-pill py-4 px-6 text-center fs-5 fw-bold" required />
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-gold w-100 rounded-pill py-4 fs-5 fw-bold">
+                Commencer
+            </button>
+        </form>
+    </div>
+
+</body>
+</html>

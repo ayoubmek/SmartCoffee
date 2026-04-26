@@ -4,7 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Categorie;
 use App\Entity\Produit;
+use App\Entity\Offer;
+use App\Entity\User;
 use App\Form\ProduitType;
+use App\Form\CategorieType;
+use App\Form\OfferType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -21,35 +25,30 @@ final class ProduitController extends AbstractController
     #[Route(name: 'app_produit_index', methods: ['GET'])]
     public function index(EntityManagerInterface $em, SessionInterface $session): Response
     {
-        // 1️⃣ Protect page: check login
         if (!$session->get('logged_in')) {
             return $this->redirectToRoute('app_login');
         }
 
         $produit = new Produit();
-        $form = $this->createForm(ProduitType::class, $produit);
+        $form = $this->createForm(ProduitType::class, $produit, [
+             'action' => $this->generateUrl('app_produit_new')
+        ]);
+        
+        $produits = $em->createQueryBuilder()
+            ->select('p', 'c')
+            ->from(Produit::class, 'p')
+            ->leftJoin('p.categorie', 'c')
+            ->orderBy('p.position', 'ASC')
+            ->getQuery()
+            ->getResult();
 
-        $produits = $em->getRepository(Produit::class)->findBy([], ['position' => 'ASC']);
         $categories = $em->getRepository(Categorie::class)->findAll();
 
-        $editForms = [];
-        foreach ($produits as $product) {
-            $editForms[$product->getId()] = $this->createForm(ProduitType::class, $product)->createView();
-        }
-
-        $response = $this->render('produit/index.html.twig', [
+        return $this->render('produit/index.html.twig', [
             'produits'   => $produits,
             'categories' => $categories,
             'form'       => $form->createView(),
-            'editForms'  => $editForms,
         ]);
-
-        // 2️⃣ Prevent browser caching
-        $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
-        $response->headers->set('Pragma', 'no-cache');
-        $response->headers->set('Expires', '0');
-
-        return $response;
     }
 
 
@@ -100,22 +99,35 @@ if ($file) {
 
 
     /* ---------- UPDATE ---------- */
-#[Route('/{id}/edit', name: 'app_produit_edit', methods: ['POST'])] // Changed to POST only for modal submission
-public function edit(Request $request, Produit $produit, EntityManagerInterface $em, SluggerInterface $slugger): Response
-{
-    $form = $this->createForm(ProduitType::class, $produit);
-    $form->handleRequest($request);
+    #[Route('/{id}/edit', name: 'app_produit_edit', methods: ['POST'])]
+    public function edit(Request $request, Produit $produit, EntityManagerInterface $em, SluggerInterface $slugger): Response
+    {
+        $form = $this->createForm(ProduitType::class, $produit);
+        $form->handleRequest($request);
 
-    if ($form->isSubmitted() && $form->isValid()) {
-        $this->handleImageUpload($form->get('imageFile')->getData(), $produit, $slugger);
-        $em->flush();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->handleImageUpload($form->get('imageFile')->getData(), $produit, $slugger);
+            $em->flush();
+
+            return $this->redirectToRoute('app_produit_index', [], Response::HTTP_SEE_OTHER);
+        }
 
         return $this->redirectToRoute('app_produit_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    // If form is not valid, redirect back with error
-    return $this->redirectToRoute('app_produit_index', [], Response::HTTP_SEE_OTHER);
-}
+    #[Route('/{id}/edit-form', name: 'app_produit_edit_form', methods: ['GET'])]
+    public function editForm(Produit $produit): Response
+    {
+        $form = $this->createForm(ProduitType::class, $produit, [
+            'action' => $this->generateUrl('app_produit_edit', ['id' => $produit->getId()]),
+            'method' => 'POST',
+        ]);
+
+        return $this->render('produit/_form_edit.html.twig', [
+            'produit' => $produit,
+            'form' => $form->createView(),
+        ]);
+    }
 
     /* ---------- DELETE ---------- */
     #[Route('/{id}/delete', name: 'app_produit_delete', methods: ['GET'])]
